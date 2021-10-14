@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=corroserv_inventory
+POSTGRES_USER=lBEbTzXSIxQldikuSclEBXToRWXAXoNs
+POSTGRES_PASSWORD=xzapQfJtDU3I98uHrWG1yYst340IajcK75kjj9OZaqlCsF3ciU6dYyJNPLP2DqIR
