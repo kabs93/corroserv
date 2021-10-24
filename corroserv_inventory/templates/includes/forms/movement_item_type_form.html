@@ -1,0 +1,39 @@
+<form action="{% url 'core:movement' movement_type %}" method="get">
+  <label class="mb-3"><b>{{ movement_type | capfirst }} item type:</b></label>
+  <div class="inline-form-group">
+    <div class="form-group form-group-default inline-form-group">
+      <label>Select</label>
+      <select class="form-control" id="formGroupDefaultSelect" name="item_type">
+        {% if movement_type != "outbound" %}
+        {% if item_type == "Materials" %}
+        <option selected value="Materials">Materials</option>
+        {% else %}
+        <option value="Materials">Materials</option>
+        {% endif %}
+        {% endif %}
+        {% if movement_type != "inbound" %}
+        {% if item_type == "Products" %}
+        <option selected value="Products">Products</option>
+        {% else %}
+        <option value="Products">Products</option>
+        {% endif %}
+        {% endif %}
+        {% if item_type == "Consumables" %}
+        <option selected value="Consumables">Consumables</option>
+        {% else %}
+        <option value="Consumables">Consumables</option>
+        {% endif %}
+        {% if item_type == "Fibers" %}
+        <option selected value="Fibers">Fibers</option>
+        {% else %}
+        <option value="Fibers">Fibers</option>
+        {% endif %}
+        {% if item_type == "Tools" %}
+        <option selected value="Tools">Tools</option>
+        {% else %}
+        <option value="Tools">Tools</option>
+        {% endif %}
+      </select>
+    </div>
+    <button type="submit" class="btn btn-info mb-3">Select</button>
+</form>

@@ -27,6 +27,8 @@ services:
       context: .
       dockerfile: ./compose/production/postgres/Dockerfile
     image: corroserv_inventory_production_postgres
+    ports:
+      - "5434:5432"
     container_name: corroserv_postgres
     volumes:
       - local_postgres_data:/var/lib/postgresql/data:Z

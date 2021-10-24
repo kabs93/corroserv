@@ -190,7 +190,7 @@ body[data-background-color="dark"] .demo-icon .icon-class {
 .form-show-notify .form-control{
 	margin-bottom: 15px;
 }
-
+success
 .form-show-notify label{
 	padding-top: 0.65rem;
 }
@@ -302,4 +302,12 @@ body[data-background-color="dark"] .demo-icon .icon-class {
 		width: 85% !important;
 		right: -85%;
 	}
+}
+
+/* My CSS starts here */
+.inline-form-group {
+	display: flex;
+	justify-content: space-around;
+	margin-left: 1rem;
+	margin-right: 1rem;
 }
