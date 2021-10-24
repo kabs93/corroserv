@@ -307,7 +307,12 @@ success
 /* My CSS starts here */
 .inline-form-group {
 	display: flex;
-	justify-content: space-around;
+	justify-content: space-between;
 	margin-left: 1rem;
 	margin-right: 1rem;
+}
+
+.space-between-div {
+	display: flex;
+	justify-content: space-between;
 }

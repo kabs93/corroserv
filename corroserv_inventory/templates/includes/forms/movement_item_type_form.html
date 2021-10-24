@@ -5,33 +5,33 @@
       <label>Select</label>
       <select class="form-control" id="formGroupDefaultSelect" name="item_type">
         {% if movement_type != "outbound" %}
-        {% if item_type == "Materials" %}
-        <option selected value="Materials">Materials</option>
+        {% if item_type == "Material" %}
+        <option selected value="Material">Material</option>
         {% else %}
-        <option value="Materials">Materials</option>
+        <option value="Material">Material</option>
         {% endif %}
         {% endif %}
         {% if movement_type != "inbound" %}
-        {% if item_type == "Products" %}
-        <option selected value="Products">Products</option>
+        {% if item_type == "Product" %}
+        <option selected value="Product">Product</option>
         {% else %}
-        <option value="Products">Products</option>
+        <option value="Product">Product</option>
         {% endif %}
         {% endif %}
-        {% if item_type == "Consumables" %}
-        <option selected value="Consumables">Consumables</option>
+        {% if item_type == "Consumable" %}
+        <option selected value="Consumable">Consumable</option>
         {% else %}
-        <option value="Consumables">Consumables</option>
+        <option value="Consumable">Consumable</option>
         {% endif %}
-        {% if item_type == "Fibers" %}
-        <option selected value="Fibers">Fibers</option>
+        {% if item_type == "Fiber" %}
+        <option selected value="Fiber">Fiber</option>
         {% else %}
-        <option value="Fibers">Fibers</option>
+        <option value="Fiber">Fiber</option>
         {% endif %}
-        {% if item_type == "Tools" %}
-        <option selected value="Tools">Tools</option>
+        {% if item_type == "Tool" %}
+        <option selected value="Tool">Tool</option>
         {% else %}
-        <option value="Tools">Tools</option>
+        <option value="Tool">Tool</option>
         {% endif %}
       </select>
     </div>

@@ -3,25 +3,27 @@ import uuid
 from django.db import models
 from django.db.models.fields import BooleanField
 
+from .managers import InventoryManager
+
 
 class ItemType(models.Model):
 
-    MATERIAL = "MTR"
-    PRODUCT = "PRD"
-    CONSUMABLE = "CSB"
-    FIBER = "FBR"
-    TOOL = "TOL"
-    ITEM_TYPES = [
-        (MATERIAL, "Material"),
-        (PRODUCT, "Product"),
-        (CONSUMABLE, "Consumable"),
-        (FIBER, "Fiber"),
-        (TOOL, "Tool"),
-    ]
+    # MATERIAL = "MTR"
+    # PRODUCT = "PRD"
+    # CONSUMABLE = "CSB"
+    # FIBER = "FBR"
+    # TOOL = "TOL"
+    # ITEM_TYPES = [
+    #     (MATERIAL, "Material"),
+    #     (PRODUCT, "Product"),
+    #     (CONSUMABLE, "Consumable"),
+    #     (FIBER, "Fiber"),
+    #     (TOOL, "Tool"),
+    # ]
 
     name = models.CharField(
-        max_length=3,
-        choices=ITEM_TYPES,
+        max_length=16,
+        # choices=ITEM_TYPES,
     )
     asset = BooleanField(default=False)
 
@@ -31,27 +33,27 @@ class ItemType(models.Model):
 
 class UoM(models.Model):
 
-    KILOGRAM = "KG"
-    LITER = "LT"
-    UoM_CHOICES = [
-        (KILOGRAM, "kg"),
-        (LITER, "l"),
-    ]
+    # KILOGRAM = "KG"
+    # LITER = "LT"
+    # UoM_CHOICES = [
+    #     (KILOGRAM, "kg"),
+    #     (LITER, "l"),
+    # ]
 
-    WEIGHT = "WGT"
-    VOLUME = "VOL"
-    UoM_TYPES = [
-        (WEIGHT, "Weight"),
-        (VOLUME, "Volume"),
-    ]
+    # WEIGHT = "WGT"
+    # VOLUME = "VOL"
+    # UoM_TYPES = [
+    #     (WEIGHT, "Weight"),
+    #     (VOLUME, "Volume"),
+    # ]
 
     uom = models.CharField(
         max_length=2,
-        choices=UoM_CHOICES,
+        # choices=UoM_CHOICES,
     )
     type = models.CharField(
-        max_length=3,
-        choices=UoM_TYPES,
+        max_length=8,
+        # choices=UoM_TYPES,
     )
 
 
@@ -63,8 +65,8 @@ class Item(models.Model):
     )
     name = models.CharField(max_length=64, unique=True)
     type = models.ForeignKey(ItemType, on_delete=models.PROTECT)
-    size = models.FloatField()
-    uom = models.ForeignKey(UoM, on_delete=models.PROTECT)
+    size = models.FloatField(null=True)
+    uom = models.ForeignKey(UoM, on_delete=models.PROTECT, null=True)
 
     def __str__(self):
         return str(self.name)
@@ -87,6 +89,8 @@ class Inventory(models.Model):
     location = models.ForeignKey(Location, on_delete=models.PROTECT)
     quantity = models.IntegerField()
 
+    objects = InventoryManager()
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -105,20 +109,20 @@ class SingleOpenInventory(models.Model):
 
 
 class TaskType(models.Model):
-    CONSUME = "CSM"
-    CONVERT = "CVT"
-    TRANSFER = "TRF"
-    INTERFACE_MOVEMENT = "ITF"
-    TASK_TYPES = [
-        (CONSUME, "Consume"),
-        (CONVERT, "Convert"),
-        (TRANSFER, "Transfer"),
-        (INTERFACE_MOVEMENT, "Interface Movement"),
-    ]
+    # CONSUME = "CSM"
+    # CONVERT = "CVT"
+    # TRANSFER = "TRF"
+    # INTERFACE_MOVEMENT = "ITF"
+    # TASK_TYPES = [
+    #     (CONSUME, "Consume"),
+    #     (CONVERT, "Convert"),
+    #     (TRANSFER, "Transfer"),
+    #     (INTERFACE_MOVEMENT, "Interface Movement"),
+    # ]
 
     name = models.CharField(
-        max_length=3,
-        choices=TASK_TYPES,
+        max_length=32,
+        # choices=TASK_TYPES,
     )
 
     def __str__(self):
