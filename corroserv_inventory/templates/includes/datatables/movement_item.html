@@ -8,7 +8,9 @@
         <th>Type</th>
         <th>Location</th>
         <th>Quantity</th>
+        {% if page_type != "confirm_movement" %}
         <th></th>
+        {% endif %}
       </tr>
     </thead>
     <tfoot>
@@ -17,7 +19,9 @@
         <th>Type</th>
         <th>Location</th>
         <th>Quantity</th>
+        {% if page_type != "confirm_movement" %}
         <th></th>
+        {% endif %}
       </tr>
     </tfoot>
     <tbody>
@@ -27,7 +31,10 @@
         <td>{{ inventory_item.item.type.name }}</td>
         <td>{{ inventory_item.location.name }}</td>
         <td>{{ inventory_item.quantity }}</td>
-        <td><button class="btn btn-success mb-3">Select</button></td>
+        {% if page_type != "confirm_movement" %}
+        <td><button class="btn btn-success mb-3"><a
+              href="{% url 'core:movement_confirm' movement_type inventory_item.id %}">Select</a></button></td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>

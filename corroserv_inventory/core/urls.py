@@ -17,6 +17,11 @@ urlpatterns = [
                     views.movement,
                     name="movement",
                 ),
+                path(
+                    "<str:movement_type>/<int:inventory_item_id>",
+                    views.movement_confirm,
+                    name="movement_confirm",
+                ),
             ]
         ),
     ),
