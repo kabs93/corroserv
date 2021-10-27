@@ -4,14 +4,12 @@
     <div class="form-group form-group-default inline-form-group">
       <label>Select</label>
       <select class="form-control" id="formGroupDefaultSelect" name="item_type">
-        {% if movement_type != "outbound" %}
         {% if item_type == "Material" %}
         <option selected value="Material">Material</option>
         {% else %}
         <option value="Material">Material</option>
         {% endif %}
-        {% endif %}
-        {% if movement_type != "inbound" %}
+        {% if movement_type != "Inbound" %}
         {% if item_type == "Product" %}
         <option selected value="Product">Product</option>
         {% else %}
