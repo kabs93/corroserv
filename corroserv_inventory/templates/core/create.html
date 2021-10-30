@@ -14,8 +14,8 @@
 		<div class="page-inner py-5">
 			<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
 				<div>
-					<h2 class="text-white pb-2 fw-bold">{{ movement_type | capfirst }} Movement</h2>
-					<h5 class="text-white op-7 mb-2">Confirm {{ movement_type }} movement tasks</h5>
+					<h2 class="text-white pb-2 fw-bold">Create {{ item_type | capfirst }} </h2>
+					<h5 class="text-white op-7 mb-2">Create {{ item_type | capfirst }} item</h5>
 				</div>
 				<div class="ml-md-auto py-2 py-md-0">
 					<a href="#" class="btn btn-white btn-border btn-round mr-2">Manage</a>
@@ -29,33 +29,17 @@
 			<div class="col-md-12">
 				<div class="card">
 					<div class="card-header">
-						<div class="card-title">Confirm {{ movement_type }} movement</div>
+						<div class="card-title">Fill in {{ item_type }} details</div>
 					</div>
 					<div class="card-body">
 						<div class="row">
 							<div class="col-md-6 col-lg-6">
-								<form action="{% url 'core:movement_confirm' movement_type item.uuid inventory_item.id  %}" method="post">
+								<form action="{% url 'core:create' item_type %}" method="post">
 									{% csrf_token %}
 									{{ form }}
 									<button type="submit" class="btn btn-success mb-3">Confirm</button>
 									{{ location_input_error }}
 								</form>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-12">
-				<div class="card">
-					<div class="card-header">
-						<div class="card-title">Current <b>{{ item }}</b> locations</div>
-					</div>
-					<div class="card-body">
-						<div class="row">
-							<div class="col-md-12 col-lg-12">
-								{% include 'includes/datatables/movement_item.html' %}
 							</div>
 						</div>
 					</div>

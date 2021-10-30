@@ -48,7 +48,9 @@
 			<div class="card">
 				<div class="card-header space-between-div">
 					<div class="card-title">Choose {{ item_type | capfirst }}</div>
-					<div><button class="btn btn-success mb-3">New</button></div>
+					{% if movement_type == "Inbound" %}
+					<div><button class="btn btn-success mb-3"><a href="{% url 'core:create' item_type %}">New</a></button></div>
+					{% endif %}
 				</div>
 				<div class="card-body">
 					<div class="row">

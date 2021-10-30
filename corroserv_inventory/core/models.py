@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models.fields import BooleanField
 
 from .managers import InventoryManager
+from .mixins import ItemMixin
 
 
 class ItemType(models.Model):
@@ -56,8 +57,11 @@ class UoM(models.Model):
         # choices=UoM_TYPES,
     )
 
+    def __str__(self):
+        return str(self.uom)
 
-class Item(models.Model):
+
+class Item(ItemMixin):
     uuid = models.UUIDField(
         unique=True,
         default=uuid.uuid4,

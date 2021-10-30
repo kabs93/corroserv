@@ -1,3 +1,4 @@
+import uuid
 from typing import Union
 
 from django.db import models
@@ -16,12 +17,14 @@ class InventoryManager(models.Manager):
 
     def get_details_for_item(
         self,
-        inventory_item_id: int,
-    ) -> Union[
-        "core_models.Item", "core_models.Inventory", QuerySet["core_models.Inventory"]
-    ]:
-        inventory_item = self.get(pk=inventory_item_id)
-        item = core_models.Item.objects.get(pk=inventory_item.item.id)
-        all_inventory_items_for_item = self.filter(item=item)
+        item_uuid: uuid,
+        inventory_item_id: int = None,
+    ) -> Union["core_models.Item", QuerySet["core_models.Inventory"]]:
+        item = core_models.Item.objects.get(uuid=item_uuid)
+        if inventory_item_id:
+            inventory_item = self.get(pk=inventory_item_id)
+        else:
+            inventory_item = None
+        all_inventory_items_for_item = self.filter(item=item, quantity__gt=0)
 
         return item, inventory_item, all_inventory_items_for_item
