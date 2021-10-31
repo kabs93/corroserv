@@ -13,7 +13,7 @@ class InventoryManager(models.Manager):
         type: str,
     ) -> QuerySet["core_models.Inventory"]:
 
-        return self.filter(item__type__name=type)
+        return self.filter(item__type__name=type, quantity__gt=0)
 
     def get_details_for_item(
         self,

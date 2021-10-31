@@ -12,37 +12,19 @@ urlpatterns = [
         "create/",
         include(
             [
-                path(
-                    "<str:item_type>/",
-                    views.create,
-                    name="create",
-                ),
-                # path(
-                #     "<str:item_type>/<uuid:inventory_item_id>",
-                #     views.create_confirm,
-                #     name="create_confirm",
-                # ),
+                path("<str:item_type>/", views.create, name="create"),
             ]
         ),
     ),
     path(
-        "movement/",
+        "task/",
         include(
             [
+                path("<str:task_type>/", views.task, name="task"),
                 path(
-                    "<str:movement_type>/",
-                    views.movement,
-                    name="movement",
-                ),
-                path(
-                    "<str:movement_type>/<uuid:item_uuid>/",
-                    views.movement_confirm,
-                    name="movement_confirm",
-                ),
-                path(
-                    "<str:movement_type>/<uuid:item_uuid>/<int:inventory_item_id>",
-                    views.movement_confirm,
-                    name="movement_confirm",
+                    "<str:task_type>/<uuid:item_uuid>/",
+                    views.task_confirm,
+                    name="task_confirm",
                 ),
             ]
         ),

@@ -14,8 +14,13 @@
 		<div class="page-inner py-5">
 			<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
 				<div>
-					<h2 class="text-white pb-2 fw-bold">{{ movement_type | capfirst }} Movement</h2>
-					<h5 class="text-white op-7 mb-2">Create {{ movement_type }} movement tasks</h5>
+					{% if task_type == "Consume" %}
+					<h2 class="text-white pb-2 fw-bold">Consume</h2>
+					<h5 class="text-white op-7 mb-2">Create consume tasks</h5>
+					{% else %}
+					<h2 class="text-white pb-2 fw-bold">{{ task_type | capfirst }} Movement</h2>
+					<h5 class="text-white op-7 mb-2">Create {{ task_type }} movement tasks</h5>
+					{% endif %}
 				</div>
 				<div class="ml-md-auto py-2 py-md-0">
 					<a href="#" class="btn btn-white btn-border btn-round mr-2">Manage</a>
@@ -34,7 +39,7 @@
 					<div class="card-body">
 						<div class="row">
 							<div class="col-md-6 col-lg-6">
-								{% include 'includes/forms/movement_item_type_form.html' %}
+								{% include 'includes/forms/task_item_type_form.html' %}
 							</div>
 						</div>
 					</div>
@@ -48,14 +53,14 @@
 			<div class="card">
 				<div class="card-header space-between-div">
 					<div class="card-title">Choose {{ item_type | capfirst }}</div>
-					{% if movement_type == "Inbound" %}
+					{% if task_type == "Inbound" %}
 					<div><button class="btn btn-success mb-3"><a href="{% url 'core:create' item_type %}">New</a></button></div>
 					{% endif %}
 				</div>
 				<div class="card-body">
 					<div class="row">
 						<div class="col-md-12 col-lg-12">
-							{% include 'includes/datatables/movement_item.html' %}
+							{% include 'includes/datatables/inventory_item_datatable.html' %}
 						</div>
 					</div>
 				</div>

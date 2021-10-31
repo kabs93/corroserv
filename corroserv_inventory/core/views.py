@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 
-from .forms import CreateItemForm, InboundForm, OutboundForm
+from .forms import ConsumeForm, CreateItemForm, InboundForm, OutboundForm
 from .models import Inventory, Item, ItemType
 
 
@@ -17,75 +17,92 @@ def home(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
-def movement(request: HttpRequest, movement_type: str) -> HttpResponse:
+def task(request: HttpRequest, task_type: str) -> HttpResponse:
 
     item_type = request.GET.get("item_type", None)
 
     inventory_listing = Inventory.objects.get_all_by_item_type(item_type)
 
     context = {
-        "movement_type": movement_type,
+        "task_type": task_type,
         "item_type": item_type,
         "inventory_listing": inventory_listing,
     }
 
-    return render(request, "core/movement.html", context=context)
+    return render(request, "core/task/task.html", context=context)
 
 
 @login_required
-def movement_confirm(
+def task_confirm(
     request: HttpRequest,
-    movement_type: str,
+    task_type: str,
     item_uuid: uuid,
-    inventory_item_id: int = None,
 ) -> HttpResponse:
+
+    inventory_item_id = request.GET.get("inventory", None)
     (
         item,
         inventory_item,
         inventory_listing,
     ) = Inventory.objects.get_details_for_item(item_uuid, inventory_item_id)
 
-    location_input_error = ""
-
-    if movement_type == "Inbound":
-        if inventory_item:
-            form = InboundForm(initial={"location": inventory_item.location})
-        else:
-            form = InboundForm
-    elif movement_type == "Outbound":
-        form = OutboundForm(initial={"location": inventory_item.location})
-    else:
-        form = None
+    form_error = ""
 
     if request.method == "POST":
-        form = form(request.POST)
+        if task_type == "Inbound":
+            form = InboundForm(request.POST)
+        elif task_type == "Outbound":
+            form = OutboundForm(request.POST)
+        elif task_type == "Consume":
+            form = ConsumeForm(request.POST)
+
         if form.is_valid():
-            location_input_error = item.create_movement_task_and_update_inventory(
-                location_input_error,
+            form_error = item.create_task_and_update_inventory(
+                form_error,
                 form,
-                movement_type,
+                task_type,
                 item,
                 inventory_listing,
             )
-            if location_input_error == "":
+            if form_error == "":
                 return redirect(request.path_info)
         else:
             print("form.errors")
             print(form.errors)
 
+    else:
+        if task_type == "Inbound":
+            if inventory_item:
+                form = InboundForm(initial={"location": inventory_item.location})
+            else:
+                form = InboundForm()
+        elif task_type == "Outbound":
+            if inventory_item:
+                form = OutboundForm(initial={"location": inventory_item.location})
+            else:
+                form = OutboundForm()
+        elif task_type == "Consume":
+            if inventory_item:
+                form = ConsumeForm(initial={"location": inventory_item.location})
+            else:
+                form = ConsumeForm()
+        else:
+            form = None
+
     context = {
-        "movement_type": movement_type,
+        "task_type": task_type,
         "item": item,
         "inventory_item": inventory_item,
         "inventory_listing": inventory_listing,
         "page_type": "confirm_movement",
         "form": form,
-        "location_input_error": location_input_error,
+        "location_input_error": form_error,
     }
 
-    return render(request, "core/movement_confirm.html", context=context)
+    return render(request, "core/task/task_confirm.html", context=context)
 
 
+@login_required
 def create(request: HttpRequest, item_type: str) -> HttpResponse:
 
     form = CreateItemForm
@@ -102,8 +119,8 @@ def create(request: HttpRequest, item_type: str) -> HttpResponse:
             return redirect(
                 "core:movement_confirm",
                 movement_type="Inbound",
-                item_uuid=new_item.uuid,
-                inventory_item_id=None,
+                item_uuid=new_item.uuid
+                # inventory_item_id=None,
             )
 
     context = {

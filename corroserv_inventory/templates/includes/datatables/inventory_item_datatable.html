@@ -35,7 +35,7 @@
         <td>
           <button class="btn btn-success mb-3">
             <a
-              href="{% url 'core:movement_confirm' movement_type inventory_item.item.uuid inventory_item.id %}">Select</a>
+              href="{% url 'core:task_confirm' task_type inventory_item.item.uuid %}?inventory={{ inventory_item.id }}">Select</a>
           </button>
         </td>
         {% endif %}

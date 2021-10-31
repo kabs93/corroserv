@@ -1,35 +1,43 @@
-<form action="{% url 'core:movement' movement_type %}" method="get">
-  <label class="mb-3"><b>{{ movement_type | capfirst }} item type:</b></label>
+<form action="{% url 'core:task' task_type %}" method="get">
+  <label class="mb-3"><b>{{ task_type | capfirst }} item type:</b></label>
   <div class="inline-form-group">
     <div class="form-group form-group-default inline-form-group">
       <label>Select</label>
       <select class="form-control" id="formGroupDefaultSelect" name="item_type">
+        {% if task_type == "Inbound" %}
         {% if item_type == "Material" %}
         <option selected value="Material">Material</option>
         {% else %}
         <option value="Material">Material</option>
         {% endif %}
-        {% if movement_type != "Inbound" %}
+        {% endif %}
+        {% if task_type == "Outbound" %}
         {% if item_type == "Product" %}
         <option selected value="Product">Product</option>
         {% else %}
         <option value="Product">Product</option>
         {% endif %}
         {% endif %}
+        {% if task_type != "Outbound" %}
         {% if item_type == "Consumable" %}
         <option selected value="Consumable">Consumable</option>
         {% else %}
         <option value="Consumable">Consumable</option>
         {% endif %}
+        {% endif %}
+        {% if task_type == "Inbound" %}
         {% if item_type == "Fiber" %}
         <option selected value="Fiber">Fiber</option>
         {% else %}
         <option value="Fiber">Fiber</option>
         {% endif %}
+        {% endif %}
+        {% if task_type != "Consume" %}
         {% if item_type == "Tool" %}
         <option selected value="Tool">Tool</option>
         {% else %}
         <option value="Tool">Tool</option>
+        {% endif %}
         {% endif %}
       </select>
     </div>
