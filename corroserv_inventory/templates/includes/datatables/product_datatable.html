@@ -1,0 +1,33 @@
+{% load static %}
+
+<div class="table-responsive">
+  <table id="basic-datatables" class="display table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Type</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+        <th>Item</th>
+        <th>Type</th>
+        <th></th>
+      </tr>
+    </tfoot>
+    <tbody>
+      {% for product in product_listing %}
+      <tr>
+        <td>{{ product.name }}</td>
+        <td>{{ product.type.name }}</td>
+        <td>
+          <button class="btn btn-success mb-3">
+            <a href="{% url 'core:convert_materials' product.uuid %}">Select</a>
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

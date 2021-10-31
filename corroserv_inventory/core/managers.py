@@ -28,3 +28,15 @@ class InventoryManager(models.Manager):
         all_inventory_items_for_item = self.filter(item=item, quantity__gt=0)
 
         return item, inventory_item, all_inventory_items_for_item
+
+
+class ItemManager(models.Manager):
+    def get_all_products(
+        self,
+    ) -> QuerySet["core_models.Item"]:
+
+        return self.filter(type__name="Product")
+
+    def get_product(self, product_uuid: uuid) -> "core_models.Item":
+
+        return self.get(uuid=product_uuid)

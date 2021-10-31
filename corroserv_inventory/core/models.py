@@ -3,29 +3,13 @@ import uuid
 from django.db import models
 from django.db.models.fields import BooleanField
 
-from .managers import InventoryManager
+from .managers import InventoryManager, ItemManager
 from .mixins import ItemMixin
 
 
 class ItemType(models.Model):
 
-    # MATERIAL = "MTR"
-    # PRODUCT = "PRD"
-    # CONSUMABLE = "CSB"
-    # FIBER = "FBR"
-    # TOOL = "TOL"
-    # ITEM_TYPES = [
-    #     (MATERIAL, "Material"),
-    #     (PRODUCT, "Product"),
-    #     (CONSUMABLE, "Consumable"),
-    #     (FIBER, "Fiber"),
-    #     (TOOL, "Tool"),
-    # ]
-
-    name = models.CharField(
-        max_length=16,
-        # choices=ITEM_TYPES,
-    )
+    name = models.CharField(max_length=16)
     asset = BooleanField(default=False)
 
     def __str__(self):
@@ -34,28 +18,8 @@ class ItemType(models.Model):
 
 class UoM(models.Model):
 
-    # KILOGRAM = "KG"
-    # LITER = "LT"
-    # UoM_CHOICES = [
-    #     (KILOGRAM, "kg"),
-    #     (LITER, "l"),
-    # ]
-
-    # WEIGHT = "WGT"
-    # VOLUME = "VOL"
-    # UoM_TYPES = [
-    #     (WEIGHT, "Weight"),
-    #     (VOLUME, "Volume"),
-    # ]
-
-    uom = models.CharField(
-        max_length=2,
-        # choices=UoM_CHOICES,
-    )
-    type = models.CharField(
-        max_length=8,
-        # choices=UoM_TYPES,
-    )
+    uom = models.CharField(max_length=2)
+    type = models.CharField(max_length=8)
 
     def __str__(self):
         return str(self.uom)
@@ -71,6 +35,8 @@ class Item(ItemMixin):
     type = models.ForeignKey(ItemType, on_delete=models.PROTECT)
     size = models.FloatField(null=True)
     uom = models.ForeignKey(UoM, on_delete=models.PROTECT, null=True)
+
+    objects = ItemManager()
 
     def __str__(self):
         return str(self.name)
@@ -113,20 +79,9 @@ class SingleOpenInventory(models.Model):
 
 
 class TaskType(models.Model):
-    # CONSUME = "CSM"
-    # CONVERT = "CVT"
-    # TRANSFER = "TRF"
-    # INTERFACE_MOVEMENT = "ITF"
-    # TASK_TYPES = [
-    #     (CONSUME, "Consume"),
-    #     (CONVERT, "Convert"),
-    #     (TRANSFER, "Transfer"),
-    #     (INTERFACE_MOVEMENT, "Interface Movement"),
-    # ]
 
     name = models.CharField(
         max_length=32,
-        # choices=TASK_TYPES,
     )
 
     def __str__(self):

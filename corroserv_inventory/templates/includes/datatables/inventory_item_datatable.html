@@ -8,7 +8,7 @@
         <th>Type</th>
         <th>Location</th>
         <th>Quantity</th>
-        {% if page_type != "confirm_movement" %}
+        {% if page_type != "confirm_task" %}
         <th></th>
         {% endif %}
       </tr>
@@ -19,7 +19,7 @@
         <th>Type</th>
         <th>Location</th>
         <th>Quantity</th>
-        {% if page_type != "confirm_movement" %}
+        {% if page_type != "confirm_task" %}
         <th></th>
         {% endif %}
       </tr>
@@ -31,7 +31,7 @@
         <td>{{ inventory_item.item.type.name }}</td>
         <td>{{ inventory_item.location.name }}</td>
         <td>{{ inventory_item.quantity }}</td>
-        {% if page_type != "confirm_movement" %}
+        {% if page_type == "select_task" %}
         <td>
           <button class="btn btn-success mb-3">
             <a
