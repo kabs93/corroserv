@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base-vue.html" %}
 
 {% load static %}
 
@@ -9,38 +9,48 @@
 
 {% block content %}
 
-<div class="content">
-	<div class="panel-header bg-primary-gradient">
-		<div class="page-inner py-5">
-			<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
-				<div>
-					<h2 class="text-white pb-2 fw-bold">Convert</h2>
-					<h5 class="text-white op-7 mb-2">Select materials for conversion task</h5>
-				</div>
-				<div class="ml-md-auto py-2 py-md-0">
-					<a href="#" class="btn btn-white btn-border btn-round mr-2">Manage</a>
-					<a href="#" class="btn btn-secondary btn-round">Add Customer</a>
+<div id="convertMaterials">
+	<div class="content">
+		<div class="panel-header bg-primary-gradient">
+			<div class="page-inner py-5">
+				<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
+					<div>
+						<h2 class="text-white pb-2 fw-bold">Convert</h2>
+						<h5 class="text-white op-7 mb-2">Select materials for conversion task</h5>
+					</div>
+					<div class="ml-md-auto py-2 py-md-0">
+						<a href="#" class="btn btn-white btn-border btn-round mr-2">Manage</a>
+						<a href="#" class="btn btn-secondary btn-round">Add Customer</a>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<div class="page-inner">
-		<div class="row">
-			<div class="col-md-12">
-				<div class="card">
-					<div class="card-header">
-						<div class="card-title">Select {{ product }} materials</div>
-					</div>
-					<div class="card-body">
-						<div class="row">
-							<div class="col-md-6 col-lg-6">
-								<form action="{% url 'core:convert_materials' product.uuid %}" method="post">
-									{% csrf_token %}
-									{{ form }}
-									<button type="submit" class="btn btn-success mb-3">Confirm</button>
-									{{ location_input_error }}
-								</form>
+		<div class="page-inner">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="card-title">Select {{ product }} materials</div>
+						</div>
+						<div class="card-body">
+							<div class="row">
+								<div class="col-md-6 col-lg-6">
+									<label class="mb-3"><b>Select Materials:</b></label>
+									<div class="inline-form-group">
+										<div class="form-group form-group-default inline-form-group">
+											<label>Select</label>
+											<select v-model="selected" class="form-control" id="formGroupDefaultSelect" name="material">
+												<option @click="onSelect" v-for="material in materials" :value="material">[[ material.name ]]
+												</option>
+											</select>
+										</div>
+									</div>
+								</div>
+								<ul v-for="selectedMaterial in selectedMaterials">
+									<li>[[ selectedMaterial.name ]] <span>X</span></li>
+								</ul>
 							</div>
+							<button @click="onConfirm" class="btn btn-success mb-3">Confirm</button>
 						</div>
 					</div>
 				</div>
@@ -48,9 +58,54 @@
 		</div>
 	</div>
 </div>
-</div>
+
+<!-- {{ survey_questions_serialized|json_script:"survey_questions_serialized" }} -->
 
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+<script>
+
+	// var survey_questions_serialized = JSON.parse(document.getElementById('survey_questions_serialized').textContent);
+
+	var app = new Vue({
+		delimiters: ["[[", "]]"],
+		el: '#convertMaterials',
+		components: {
+		},
+		data: {
+			materials: [],
+			selected: null,
+			selectedMaterials: [],
+		},
+		created: function () {
+			this.getMaterials()
+		},
+		// updated: function () {
+		// 	console.log("this.selectedMaterials")
+		// 	console.log(this.selectedMaterials)
+		// },
+		methods: {
+			getMaterials: async function () {
+				let url = `/api/materials/`
+				try {
+					materials_info = await axios.get(url);
+					this.materials = materials_info.data;
+				} catch (err) {
+					console.log("Error: ", err);
+				}
+			},
+			onSelect: function () {
+				if (!this.selectedMaterials.includes(this.selected)) {
+					this.selectedMaterials.push(this.selected)
+				}
+			},
+			onConfirm: function () {
+				console.log(`Selected materials: ${this.selectedMaterials}`)
+				console.log('handle next step')
+			}
+		},
+	});
+</script>
+{% endblock javascripts %}
