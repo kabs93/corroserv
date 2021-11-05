@@ -1,0 +1,39 @@
+{% load static %}
+
+<div class="table-responsive">
+  <table id="basic-datatables" class="display table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Type</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+        <th>Item</th>
+        <th>Type</th>
+        <th></th>
+      </tr>
+    </tfoot>
+    <tbody>
+      {% for material in material_listing %}
+      <tr>
+        <td>{{ material.item.name }}</td>
+        <td>{{ material.item.type.name }}</td>
+        <td>
+          {% if material.consume_quantity == None %}
+          <button class="btn btn-success mb-3">
+            <a href="{% url 'core:convert_material_consumption' convert_task.id material.id %}">Start</a>
+          </button>
+          {% else %}
+          <button class="btn btn-info mb-3">
+            <a href="#">Edit</a>
+          </button>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

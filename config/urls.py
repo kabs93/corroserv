@@ -4,7 +4,10 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views import defaults as default_views
 
-from corroserv_inventory.core.api.views import confirm_convert_materials
+from corroserv_inventory.core.api.views import (
+    confirm_convert_materials,
+    convert_material_consumption,
+)
 
 # from django.views.generic import TemplateView
 # from rest_framework.authtoken.views import obtain_auth_token
@@ -29,6 +32,11 @@ urlpatterns += [
         "api/confirm-convert-materials/",
         confirm_convert_materials,
         name="confirm_convert_materials",
+    ),
+    path(
+        "api/convert-material-consumption/<int:convert_material_id>",
+        convert_material_consumption,
+        name="convert_material_consumption",
     ),
     # DRF auth token
     # path("auth-token/", obtain_auth_token),

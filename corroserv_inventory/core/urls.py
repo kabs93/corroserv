@@ -35,6 +35,11 @@ urlpatterns = [
                                 views.convert_task_main,
                                 name="convert_task_main",
                             ),
+                            path(
+                                "main/<int:convert_task_id>/<int:convert_material_id>",
+                                views.convert_material_consumption,
+                                name="convert_material_consumption",
+                            ),
                         ]
                     ),
                 ),

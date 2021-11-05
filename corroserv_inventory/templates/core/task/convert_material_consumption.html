@@ -1,0 +1,117 @@
+{% extends "base-vue.html" %}
+
+{% load static %}
+
+{% block title %} Dashboard {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div id="consumeMaterial">
+	<div class="content">
+		<div class="panel-header bg-primary-gradient">
+			<div class="page-inner py-5">
+				<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
+					<div>
+						<h2 class="text-white pb-2 fw-bold">Convert Material Consumption</h2>
+						<h5 class="text-white op-7 mb-2">Consumption input for material conversion</h5>
+					</div>
+					<div class="ml-md-auto py-2 py-md-0">
+						<a href="#" class="btn btn-white btn-border btn-round mr-2">Manage</a>
+						<a href="#" class="btn btn-secondary btn-round">Add Customer</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="page-inner">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="card-title">Input {{ material.item.name }} consumption</div>
+						</div>
+						<div class="card-body">
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th scope="col">Name</th>
+										<th scope="col">Location</th>
+										<th scope="col">Quantity</th>
+										<th scope="col">Status</th>
+										<th scope="col">Remaining ({{ material.item.uom }})</th>
+										<th scope="col">Size after ({{ material.item.uom }})</th>
+									</tr>
+								</thead>
+								<tbody v-for="material in material_info">
+									<tr>
+										<td>[[ material.name ]]</td>
+										<td>[[ material.location ]]</td>
+										<td>[[ material.quantity ]]</td>
+										<td>[[ material.status ]]</td>
+										<td>[[ material.remaining ]]</td>
+										<!-- <td><input type="text"></td> -->
+										<td><input :id="'ConsumeInput__'+material.id+'__'+material.status" type="text"></td>
+									</tr>
+								</tbody>
+							</table>
+							<button @click="onConfirm" class="btn btn-success mb-3">Confirm</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{{ convert_material_id|json_script:"convert_material_id" }}
+{% csrf_token %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script>
+
+	const convert_material_id = JSON.parse(document.getElementById('convert_material_id').textContent);
+
+	var app = new Vue({
+		delimiters: ["[[", "]]"],
+		el: '#consumeMaterial',
+		components: {
+		},
+		data: {
+			csrftoken: document.querySelector('[name=csrfmiddlewaretoken]').value,
+			endpoints: {
+				get_material_details: `/api/convert-material-consumption/${convert_material_id}`,
+			},
+			material_info: [],
+		},
+		created: function () {
+			this.getMaterialInfo()
+		},
+		methods: {
+			getMaterialInfo: async function () {
+				try {
+					const material_details = await axios.get(this.endpoints['get_material_details']);
+					this.material_info = await material_details.data['convert_material'];
+				} catch (error) {
+					console.error("Error: ", error);
+				}
+			},
+			onConfirm: async function () {
+				console.log('handle confirm task')
+				let ConsumeInputs = document.querySelectorAll('*[id^="ConsumeInput"]');
+				ConsumeInputs.forEach(input => {
+					if (input.value) {
+						let [id_name, id, status] = input.id.split("__")
+						console.log(`${id} -- ${status}`)
+						console.log(`${input.value}`)
+					}
+				})
+			},
+		},
+	});
+</script>
+{% endblock javascripts %}

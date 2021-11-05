@@ -3,7 +3,7 @@ import uuid
 from django.db import models
 from django.db.models.fields import BooleanField
 
-from .managers import InventoryManager, ItemManager, TaskManager
+from .managers import ConvertMaterialManager, InventoryManager, ItemManager, TaskManager
 from .mixins import ItemMixin
 
 
@@ -74,7 +74,9 @@ class Inventory(models.Model):
 
 
 class SingleOpenInventory(models.Model):
-    inventory_item = models.ForeignKey(Inventory, on_delete=models.PROTECT)
+    inventory_item = models.ForeignKey(
+        Inventory, related_name="open_inventory_items", on_delete=models.PROTECT
+    )
     remaining = models.DecimalField(max_digits=2, decimal_places=2)
 
 
@@ -135,6 +137,8 @@ class ConvertMaterial(models.Model):
     convert_task = models.ForeignKey(ConvertTask, on_delete=models.PROTECT)
     item = models.ForeignKey(Item, on_delete=models.PROTECT)
     consume_quantity = models.DecimalField(null=True, max_digits=2, decimal_places=2)
+
+    objects = ConvertMaterialManager()
 
 
 class TransferTask(models.Model):

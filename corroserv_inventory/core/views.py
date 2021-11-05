@@ -10,7 +10,7 @@ from .forms import (  # ConvertSelectMaterialsForm,
     InboundForm,
     OutboundForm,
 )
-from .models import Inventory, Item, ItemType
+from .models import ConvertMaterial, ConvertTask, Inventory, Item, ItemType
 
 
 @login_required
@@ -168,6 +168,33 @@ def convert_materials(request: HttpRequest, product_uuid: uuid) -> HttpResponse:
 @login_required
 def convert_task_main(request: HttpRequest, convert_task_id: int) -> HttpResponse:
 
-    context = {}
+    convert_task = ConvertTask.objects.get(pk=convert_task_id)
+    material_listing = ConvertMaterial.objects.get_materials_for_convert_task(
+        convert_task
+    )
+
+    context = {
+        "material_listing": material_listing,
+        "convert_task": convert_task,
+    }
 
     return render(request, "core/task/convert_task_main.html", context=context)
+
+
+@login_required
+def convert_material_consumption(
+    request: HttpRequest,
+    convert_task_id: int,
+    convert_material_id: int,
+) -> HttpResponse:
+
+    material = ConvertMaterial.objects.get(pk=convert_material_id)
+
+    context = {
+        "convert_material_id": convert_material_id,
+        "material": material,
+    }
+
+    return render(
+        request, "core/task/convert_material_consumption.html", context=context
+    )

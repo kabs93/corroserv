@@ -71,3 +71,12 @@ class TaskManager(models.Manager):
 
         # return redirect("core:convert_task_main", convert_task.id)
         return convert_task.id
+
+
+class ConvertMaterialManager(models.Manager):
+    def get_materials_for_convert_task(
+        self,
+        convert_task: "core_models.ConvertTask",
+    ) -> QuerySet["core_models.ConvertMaterial"]:
+
+        return self.filter(convert_task=convert_task)
