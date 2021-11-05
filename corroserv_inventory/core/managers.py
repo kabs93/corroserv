@@ -1,7 +1,7 @@
 import uuid
 from typing import Union
 
-from django.db import models
+from django.db import models, transaction
 from django.db.models.query import QuerySet
 
 import corroserv_inventory.core.models as core_models
@@ -40,3 +40,34 @@ class ItemManager(models.Manager):
     def get_product(self, product_uuid: uuid) -> "core_models.Item":
 
         return self.get(uuid=product_uuid)
+
+
+class TaskManager(models.Manager):
+    def create_convert_task(
+        self,
+        task_type: str,
+        product: "core_models.Item",
+        selected_materials: QuerySet["core_models.Item"],
+    ) -> int:
+
+        task_type = core_models.TaskType.objects.get(name=task_type)
+
+        with transaction.atomic():
+
+            task = self.create(
+                type=task_type,
+                item=product,
+            )
+
+            core_models.TaskStatus.objects.create(task=task, status="CRT")
+
+            convert_task = core_models.ConvertTask.objects.create(task=task)
+
+            for material in selected_materials:
+                core_models.ConvertMaterial.objects.create(
+                    convert_task=convert_task,
+                    item=material,
+                )
+
+        # return redirect("core:convert_task_main", convert_task.id)
+        return convert_task.id

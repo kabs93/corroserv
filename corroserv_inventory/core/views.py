@@ -3,8 +3,6 @@ import uuid
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
-from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
 
 from .forms import (  # ConvertSelectMaterialsForm,
     ConsumeForm,
@@ -13,7 +11,6 @@ from .forms import (  # ConvertSelectMaterialsForm,
     OutboundForm,
 )
 from .models import Inventory, Item, ItemType
-from .serializers import ItemSerializer
 
 
 @login_required
@@ -160,27 +157,17 @@ def convert(request: HttpRequest) -> HttpResponse:
 @login_required
 def convert_materials(request: HttpRequest, product_uuid: uuid) -> HttpResponse:
 
-    product = Item.objects.get_product(product_uuid)
-
-    # if request.method == "POST":
-    #     form = ConvertSelectMaterialsForm(request.POST)
-    #     if form.is_valid():
-    #         materials = form.cleaned_data["materials"]
-    #         print("materials")
-    #         print(materials)
-    # else:
-    #     form = ConvertSelectMaterialsForm()
-
     context = {
-        "product": product,
-        # "form": form,
+        "product_uuid": product_uuid,
         "page_type": "select_product_materials",
     }
 
     return render(request, "core/task/convert_materials.html", context=context)
 
 
-class MaterialViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated,)
-    queryset = Item.objects.filter(type__name="Material")
-    serializer_class = ItemSerializer
+@login_required
+def convert_task_main(request: HttpRequest, convert_task_id: int) -> HttpResponse:
+
+    context = {}
+
+    return render(request, "core/task/convert_task_main.html", context=context)

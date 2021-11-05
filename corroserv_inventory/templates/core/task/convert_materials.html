@@ -59,7 +59,8 @@
 	</div>
 </div>
 
-<!-- {{ survey_questions_serialized|json_script:"survey_questions_serialized" }} -->
+{{ product_uuid|json_script:"product_uuid" }}
+{% csrf_token %}
 
 {% endblock content %}
 
@@ -67,7 +68,7 @@
 {% block javascripts %}
 <script>
 
-	// var survey_questions_serialized = JSON.parse(document.getElementById('survey_questions_serialized').textContent);
+	const product_uuid = JSON.parse(document.getElementById('product_uuid').textContent);
 
 	var app = new Vue({
 		delimiters: ["[[", "]]"],
@@ -75,6 +76,12 @@
 		components: {
 		},
 		data: {
+			csrftoken: document.querySelector('[name=csrfmiddlewaretoken]').value,
+			endpoints: {
+				get_materials: `/api/materials/`,
+				confirm_materials: '/api/confirm-convert-materials/',
+			},
+			// product_uuid: product_uuid,
 			materials: [],
 			selected: null,
 			selectedMaterials: [],
@@ -82,18 +89,13 @@
 		created: function () {
 			this.getMaterials()
 		},
-		// updated: function () {
-		// 	console.log("this.selectedMaterials")
-		// 	console.log(this.selectedMaterials)
-		// },
 		methods: {
 			getMaterials: async function () {
-				let url = `/api/materials/`
 				try {
-					materials_info = await axios.get(url);
+					materials_info = await axios.get(this.endpoints['get_materials']);
 					this.materials = materials_info.data;
-				} catch (err) {
-					console.log("Error: ", err);
+				} catch (error) {
+					console.error("Error: ", error);
 				}
 			},
 			onSelect: function () {
@@ -101,9 +103,24 @@
 					this.selectedMaterials.push(this.selected)
 				}
 			},
-			onConfirm: function () {
-				console.log(`Selected materials: ${this.selectedMaterials}`)
-				console.log('handle next step')
+			onConfirm: async function () {
+				data = {
+					product_uuid: product_uuid,
+					selectedMaterials: this.selectedMaterials,
+				}
+				try {
+					response = await axios.post(
+						this.endpoints['confirm_materials'],
+						data,
+						{ headers: { 'X-CSRFToken': this.csrftoken, } })
+					if (response.status === 200) {
+						console.log(response)
+						const convertTaskId = response.data.convertTaskId
+						window.location.replace(`/task/convert/main/${convertTaskId}/`);
+					}
+				} catch (error) {
+					console.error("Error: ", error);
+				}
 			}
 		},
 	});

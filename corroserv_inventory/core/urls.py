@@ -20,11 +20,23 @@ urlpatterns = [
         "task/",
         include(
             [
-                path("convert/", views.convert, name="convert"),
                 path(
-                    "convert/<uuid:product_uuid>",
-                    views.convert_materials,
-                    name="convert_materials",
+                    "convert/",
+                    include(
+                        [
+                            path("", views.convert, name="convert"),
+                            path(
+                                "materials/<uuid:product_uuid>/",
+                                views.convert_materials,
+                                name="convert_materials",
+                            ),
+                            path(
+                                "main/<int:convert_task_id>/",
+                                views.convert_task_main,
+                                name="convert_task_main",
+                            ),
+                        ]
+                    ),
                 ),
                 path("<str:task_type>/", views.task, name="task"),
                 path(

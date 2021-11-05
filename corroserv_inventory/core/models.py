@@ -3,7 +3,7 @@ import uuid
 from django.db import models
 from django.db.models.fields import BooleanField
 
-from .managers import InventoryManager, ItemManager
+from .managers import InventoryManager, ItemManager, TaskManager
 from .mixins import ItemMixin
 
 
@@ -91,7 +91,9 @@ class TaskType(models.Model):
 class Task(models.Model):
     type = models.ForeignKey(TaskType, on_delete=models.PROTECT)
     item = models.ForeignKey(Item, on_delete=models.PROTECT)
-    location = models.ForeignKey(Location, on_delete=models.PROTECT)
+    location = models.ForeignKey(Location, null=True, on_delete=models.PROTECT)
+
+    objects = TaskManager()
 
 
 class TaskStatus(models.Model):
@@ -132,7 +134,7 @@ class ConvertTask(models.Model):
 class ConvertMaterial(models.Model):
     convert_task = models.ForeignKey(ConvertTask, on_delete=models.PROTECT)
     item = models.ForeignKey(Item, on_delete=models.PROTECT)
-    consume_quantity = models.DecimalField(max_digits=2, decimal_places=2)
+    consume_quantity = models.DecimalField(null=True, max_digits=2, decimal_places=2)
 
 
 class TransferTask(models.Model):
