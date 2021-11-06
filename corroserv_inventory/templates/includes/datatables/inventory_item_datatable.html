@@ -38,6 +38,12 @@
               href="{% url 'core:task_confirm' task_type inventory_item.item.uuid %}?inventory={{ inventory_item.id }}">Select</a>
           </button>
         </td>
+        {% elif page_type == "select_material" %}
+        <td>
+          <button class="btn btn-success mb-3">
+            <a href="{% url 'core:convert_material_consumption' convert_task_id material.id inventory_item.location.uuid %}">Select</a>
+          </button>
+        </td>
         {% endif %}
       </tr>
       {% endfor %}

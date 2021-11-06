@@ -136,9 +136,14 @@ class ConvertTask(models.Model):
 class ConvertMaterial(models.Model):
     convert_task = models.ForeignKey(ConvertTask, on_delete=models.PROTECT)
     item = models.ForeignKey(Item, on_delete=models.PROTECT)
-    consume_quantity = models.DecimalField(null=True, max_digits=2, decimal_places=2)
 
     objects = ConvertMaterialManager()
+
+
+class ConvertMaterialConsumption(models.Model):
+    convert_material = models.ForeignKey(ConvertMaterial, on_delete=models.PROTECT)
+    inventory_item = models.ForeignKey(Inventory, on_delete=models.PROTECT)
+    consume_quantity = models.FloatField()
 
 
 class TransferTask(models.Model):

@@ -38,7 +38,7 @@
 									<tr>
 										<th scope="col">Name</th>
 										<th scope="col">Location</th>
-										<th scope="col">Quantity</th>
+										<!-- <th scope="col">Quantity</th> -->
 										<th scope="col">Status</th>
 										<th scope="col">Remaining ({{ material.item.uom }})</th>
 										<th scope="col">Size after ({{ material.item.uom }})</th>
@@ -48,11 +48,11 @@
 									<tr>
 										<td>[[ material.name ]]</td>
 										<td>[[ material.location ]]</td>
-										<td>[[ material.quantity ]]</td>
+										<!-- <td>[[ material.quantity ]]</td> -->
 										<td>[[ material.status ]]</td>
 										<td>[[ material.remaining ]]</td>
 										<!-- <td><input type="text"></td> -->
-										<td><input :id="'ConsumeInput__'+material.id+'__'+material.status" type="text"></td>
+										<td><input :id="'ConsumeInput__'+material.status+'__'+material.open_inventory_id" type="text"></td>
 									</tr>
 								</tbody>
 							</table>
@@ -66,6 +66,7 @@
 </div>
 
 {{ convert_material_id|json_script:"convert_material_id" }}
+{{ location_uuid|json_script:"location_uuid" }}
 {% csrf_token %}
 
 {% endblock content %}
@@ -75,6 +76,7 @@
 <script>
 
 	const convert_material_id = JSON.parse(document.getElementById('convert_material_id').textContent);
+	const location_uuid = JSON.parse(document.getElementById('location_uuid').textContent);
 
 	var app = new Vue({
 		delimiters: ["[[", "]]"],
@@ -84,7 +86,7 @@
 		data: {
 			csrftoken: document.querySelector('[name=csrfmiddlewaretoken]').value,
 			endpoints: {
-				get_material_details: `/api/convert-material-consumption/${convert_material_id}`,
+				get_material_details: `/api/convert-material-consumption/${convert_material_id}/${location_uuid}/`,
 			},
 			material_info: [],
 		},
@@ -101,15 +103,38 @@
 				}
 			},
 			onConfirm: async function () {
-				console.log('handle confirm task')
+				let consumptionArray = []
 				let ConsumeInputs = document.querySelectorAll('*[id^="ConsumeInput"]');
 				ConsumeInputs.forEach(input => {
 					if (input.value) {
-						let [id_name, id, status] = input.id.split("__")
-						console.log(`${id} -- ${status}`)
-						console.log(`${input.value}`)
+						let [id_name, status, open_inventory_id] = input.id.split("__")
+						// console.log(`${status} -- ${open_inventory_id}`)
+						// console.log(`${input.value}`)
+						consumptionArray.push({
+							status: status,
+							open_inventory_id: open_inventory_id,
+							quantity: input.value,
+						})
 					}
 				})
+				console.log("consumptionArray")
+				console.log(consumptionArray)
+				const data = {
+					consumptionArray: consumptionArray,
+				}
+				try {
+					response = await axios.post(
+						this.endpoints['get_material_details'],
+						data,
+						{ headers: { 'X-CSRFToken': this.csrftoken, } })
+					if (response.status === 200) {
+						console.log(response)
+						// const convertTaskId = response.data.convertTaskId
+						// window.location.replace(`/task/convert/main/${convertTaskId}/`);
+					}
+				} catch (error) {
+					console.error("Error: ", error);
+				}
 			},
 		},
 	});

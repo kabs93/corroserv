@@ -34,7 +34,7 @@ urlpatterns += [
         name="confirm_convert_materials",
     ),
     path(
-        "api/convert-material-consumption/<int:convert_material_id>",
+        "api/convert-material-consumption/<int:convert_material_id>/<uuid:location_uuid>/",
         convert_material_consumption,
         name="convert_material_consumption",
     ),

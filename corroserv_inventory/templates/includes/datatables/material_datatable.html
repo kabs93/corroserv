@@ -24,7 +24,7 @@
         <td>
           {% if material.consume_quantity == None %}
           <button class="btn btn-success mb-3">
-            <a href="{% url 'core:convert_material_consumption' convert_task.id material.id %}">Start</a>
+            <a href="{% url 'core:convert_material_locations' convert_task_id material.id %}">Start</a>
           </button>
           {% else %}
           <button class="btn btn-info mb-3">

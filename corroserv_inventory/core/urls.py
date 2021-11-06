@@ -36,7 +36,12 @@ urlpatterns = [
                                 name="convert_task_main",
                             ),
                             path(
-                                "main/<int:convert_task_id>/<int:convert_material_id>",
+                                "main/<int:convert_task_id>/<int:convert_material_id>/",
+                                views.convert_material_locations,
+                                name="convert_material_locations",
+                            ),
+                            path(
+                                "main/<int:convert_task_id>/<int:convert_material_id>/<uuid:location_uuid>/",
                                 views.convert_material_consumption,
                                 name="convert_material_consumption",
                             ),

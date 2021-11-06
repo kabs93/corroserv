@@ -175,10 +175,31 @@ def convert_task_main(request: HttpRequest, convert_task_id: int) -> HttpRespons
 
     context = {
         "material_listing": material_listing,
-        "convert_task": convert_task,
+        "convert_task_id": convert_task_id,
     }
 
     return render(request, "core/task/convert_task_main.html", context=context)
+
+
+@login_required
+def convert_material_locations(
+    request: HttpRequest,
+    convert_task_id: int,
+    convert_material_id: int,
+) -> HttpResponse:
+
+    material = ConvertMaterial.objects.get(pk=convert_material_id)
+    inventory_listing = Inventory.objects.get_details_for_material(material)
+
+    context = {
+        "convert_task_id": convert_task_id,
+        "convert_material_id": convert_material_id,
+        "material": material,
+        "page_type": "select_material",
+        "inventory_listing": inventory_listing,
+    }
+
+    return render(request, "core/task/convert_material_locations.html", context=context)
 
 
 @login_required
@@ -186,12 +207,15 @@ def convert_material_consumption(
     request: HttpRequest,
     convert_task_id: int,
     convert_material_id: int,
+    location_uuid: uuid,
 ) -> HttpResponse:
 
     material = ConvertMaterial.objects.get(pk=convert_material_id)
 
     context = {
+        "convert_task_id": convert_task_id,
         "convert_material_id": convert_material_id,
+        "location_uuid": location_uuid,
         "material": material,
     }
 

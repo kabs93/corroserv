@@ -29,6 +29,13 @@ class InventoryManager(models.Manager):
 
         return item, inventory_item, all_inventory_items_for_item
 
+    def get_details_for_material(
+        self,
+        material: "core_models.ConvertMaterial",
+    ) -> QuerySet["core_models.Inventory"]:
+
+        return self.filter(item=core_models.Item.objects.get(id=material.item.id))
+
 
 class ItemManager(models.Manager):
     def get_all_products(
