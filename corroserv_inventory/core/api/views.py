@@ -9,6 +9,7 @@ from rest_framework.response import Response
 
 from corroserv_inventory.core.models import (
     ConvertMaterial,
+    ConvertMaterialConsumption,
     Inventory,
     Item,
     Location,
@@ -63,43 +64,48 @@ def convert_material_consumption(
     if request.data:
         consumptionArray = request.data["consumptionArray"]
 
-        for item in consumptionArray:
-            if item["status"] == "Open":
-                print("open consumption")
-                with transaction.atomic():
-                    ##########################################
-                    # Save ConvertMaterialConsumption First
-                    ##########################################
+        with transaction.atomic():
+            for item in consumptionArray:
 
-                    #####################################################################
-                    # Then, update Inventory quantity && SingleOpenInventory Remaining
-                    #
-                    # ###############################################################
-                    # ###############################################################
-                    # #### DON'T FORGET TO MINUS INVENTORY QUANTITY IF FULLY CONSUMED
-                    # ###############################################################
-                    # ###############################################################
-                    #
-                    #####################################################################
+                capacity = convert_material.item.size
+                post_consumption_quantity = float(item["quantity"])
+                remaining = post_consumption_quantity / capacity
+                if item["status"] == "Open":
                     open_inventory_item = SingleOpenInventory.objects.get(
                         pk=item["open_inventory_id"]
                     )
-                    capacity = open_inventory_item.inventory_item.item.size
-                    post_consumption_quantity = float(item["quantity"])
-                    remaining = post_consumption_quantity / capacity
-                    open_inventory_item.remaining = remaining
-                    open_inventory_item.save()
+                    consumed_qty = (
+                        float(open_inventory_item.remaining) * capacity
+                    ) - post_consumption_quantity
+                else:
+                    consumed_qty = capacity - post_consumption_quantity
 
-                    #############################################
-                    # Only then, update Inventory remaining
-                    #############################################
+                ConvertMaterialConsumption.objects.create(
+                    convert_material=convert_material,
+                    inventory_item=convert_material_inventory,
+                    consume_quantity=consumed_qty,
+                )
 
-            elif item["status"] == "Unopened":
-                print("unopened consumption")
-                convert_material_inventory.quantity -= 1
-                convert_material_inventory.save()
-            else:
-                print("HANDLE ERROR")
+                if item["status"] == "Open":
+                    if post_consumption_quantity == 0:
+                        open_inventory_item.delete()
+                        convert_material_inventory.quantity -= 1
+                        convert_material_inventory.save()
+                    else:
+                        open_inventory_item.remaining = remaining
+                        open_inventory_item.save()
+
+                elif item["status"] == "Unopened":
+                    if post_consumption_quantity == 0:
+                        convert_material_inventory.quantity -= 1
+                        convert_material_inventory.save()
+                    else:
+                        SingleOpenInventory.objects.create(
+                            inventory_item=convert_material_inventory,
+                            remaining=remaining,
+                        )
+                else:
+                    print("HANDLE ERROR")
 
         return Response(
             {

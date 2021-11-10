@@ -108,8 +108,6 @@
 				ConsumeInputs.forEach(input => {
 					if (input.value) {
 						let [id_name, status, open_inventory_id] = input.id.split("__")
-						// console.log(`${status} -- ${open_inventory_id}`)
-						// console.log(`${input.value}`)
 						consumptionArray.push({
 							status: status,
 							open_inventory_id: open_inventory_id,
