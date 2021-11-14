@@ -40,9 +40,14 @@
         </td>
         {% elif page_type == "select_material" %}
         <td>
+          {% if inventory_item.id in consumption_list_inventory_item_ids %}
+          <button disabled class="btn btn-done mb-3">Done</button>
+          {% else %}
           <button class="btn btn-success mb-3">
-            <a href="{% url 'core:convert_material_consumption' convert_task_id material.id inventory_item.location.uuid %}">Select</a>
+            <a
+              href="{% url 'core:convert_material_consumption' convert_task_id material.id inventory_item.location.uuid %}">Select</a>
           </button>
+          {% endif %}
         </td>
         {% endif %}
       </tr>

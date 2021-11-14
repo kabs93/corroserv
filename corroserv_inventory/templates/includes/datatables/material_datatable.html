@@ -22,13 +22,11 @@
         <td>{{ material.item.name }}</td>
         <td>{{ material.item.type.name }}</td>
         <td>
-          {% if material.consume_quantity == None %}
+          {% if material.item.id in consumption_list_item_ids %}
+          <button disabled class="btn btn-done mb-3">Done</button>
+          {% else %}
           <button class="btn btn-success mb-3">
             <a href="{% url 'core:convert_material_locations' convert_task_id material.id %}">Start</a>
-          </button>
-          {% else %}
-          <button class="btn btn-info mb-3">
-            <a href="#">Edit</a>
           </button>
           {% endif %}
         </td>

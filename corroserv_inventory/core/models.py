@@ -4,7 +4,7 @@ from django.db import models
 from django.db.models.fields import BooleanField
 
 from .managers import ConvertMaterialManager, InventoryManager, ItemManager, TaskManager
-from .mixins import ItemMixin
+from .mixins import ItemMixin, TaskMixin
 
 
 class ItemType(models.Model):
@@ -90,7 +90,7 @@ class TaskType(models.Model):
         return str(self.name)
 
 
-class Task(models.Model):
+class Task(TaskMixin):
     type = models.ForeignKey(TaskType, on_delete=models.PROTECT)
     item = models.ForeignKey(Item, on_delete=models.PROTECT)
     location = models.ForeignKey(Location, null=True, on_delete=models.PROTECT)

@@ -57,3 +57,14 @@ class ItemMixin(models.Model):
 
     class Meta:
         abstract = True
+
+
+class TaskMixin(models.Model):
+    def set_complete(self):
+        core_models.TaskStatus.objects.create(
+            task=self,
+            status="CTD",
+        )
+
+    class Meta:
+        abstract = True

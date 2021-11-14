@@ -2,15 +2,17 @@ import uuid
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect, render
 
-from .forms import (  # ConvertSelectMaterialsForm,
-    ConsumeForm,
-    CreateItemForm,
-    InboundForm,
-    OutboundForm,
+from .forms import ConsumeForm, CreateItemForm, InboundForm, OutboundForm
+from .models import (
+    ConvertMaterial,
+    ConvertMaterialConsumption,
+    ConvertTask,
+    Inventory,
+    Item,
 )
-from .models import ConvertMaterial, ConvertTask, Inventory, Item, ItemType
 
 
 @login_required
@@ -22,29 +24,16 @@ def home(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
-def create(request: HttpRequest, item_type: str) -> HttpResponse:
+def create(request: HttpRequest, item_type: str) -> HttpResponseRedirect:
 
     form = CreateItemForm
 
     if request.method == "POST":
+
         form = form(request.POST)
+
         if form.is_valid():
-            new_item = Item.objects.create(
-                name=form.cleaned_data["name"],
-                type=ItemType.objects.get(name=item_type),
-                uom=form.cleaned_data["uom"],
-                size=form.cleaned_data["size"],
-            )
-            if item_type == "Product":
-                return redirect(
-                    "core:convert",
-                )
-            else:
-                return redirect(
-                    "core:movement_confirm",
-                    movement_type="Inbound",
-                    item_uuid=new_item.uuid,
-                )
+            return Item.objects.create_item(item_type, form)
 
     context = {
         "item_type": item_type,
@@ -172,10 +161,32 @@ def convert_task_main(request: HttpRequest, convert_task_id: int) -> HttpRespons
     material_listing = ConvertMaterial.objects.get_materials_for_convert_task(
         convert_task
     )
+    consumption_list = ConvertMaterialConsumption.objects.filter(
+        convert_material__in=material_listing
+    )
+    consumption_list_item_ids = [
+        item.convert_material.item.id for item in consumption_list
+    ]
+
+    conversion_task_error = None
+
+    if request.method == "POST":
+        if "confirm_conversion_task" in request.POST:
+            materials_consumption_check = [
+                material.item.id in consumption_list_item_ids
+                for material in material_listing
+            ]
+            if False in materials_consumption_check:
+                conversion_task_error = "Not all materials have been consumed"
+            else:
+                convert_task.task.set_complete()
+                return redirect("core:home")
 
     context = {
         "material_listing": material_listing,
         "convert_task_id": convert_task_id,
+        "consumption_list_item_ids": consumption_list_item_ids,
+        "conversion_task_error": conversion_task_error,
     }
 
     return render(request, "core/task/convert_task_main.html", context=context)
@@ -191,12 +202,24 @@ def convert_material_locations(
     material = ConvertMaterial.objects.get(pk=convert_material_id)
     inventory_listing = Inventory.objects.get_details_for_material(material)
 
+    consumption_list = ConvertMaterialConsumption.objects.filter(
+        convert_material=material
+    )
+
+    consumption_list_inventory_item_ids = [
+        item.inventory_item.id for item in consumption_list
+    ]
+
+    print("consumption_list_inventory_item_ids")
+    print(consumption_list_inventory_item_ids)
+
     context = {
         "convert_task_id": convert_task_id,
         "convert_material_id": convert_material_id,
         "material": material,
         "page_type": "select_material",
         "inventory_listing": inventory_listing,
+        "consumption_list_inventory_item_ids": consumption_list_inventory_item_ids,
     }
 
     return render(request, "core/task/convert_material_locations.html", context=context)

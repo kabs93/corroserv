@@ -37,6 +37,13 @@
 								{% include 'includes/datatables/material_datatable.html' %}
 							</div>
 						</div>
+						<form action="{% url 'core:convert_task_main' convert_task_id %}" method="post">
+							{% csrf_token %}
+							<button type="submit" name="confirm_conversion_task" class="btn btn-success mb-3">Confirm</button>
+							{% if conversion_task_error %}
+							{{ conversion_task_error }}
+							{% endif %}
+						</form>
 					</div>
 				</div>
 			</div>

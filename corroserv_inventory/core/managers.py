@@ -3,6 +3,8 @@ from typing import Union
 
 from django.db import models, transaction
 from django.db.models.query import QuerySet
+from django.forms.forms import Form
+from django.shortcuts import redirect
 
 import corroserv_inventory.core.models as core_models
 
@@ -38,6 +40,28 @@ class InventoryManager(models.Manager):
 
 
 class ItemManager(models.Manager):
+    def create_item(
+        self: "core_models.Item", item_type: str, form: Form
+    ) -> "core_models.Item":
+
+        new_item = self.create(
+            name=form.cleaned_data["name"],
+            type=core_models.ItemType.objects.get(name=item_type),
+            uom=form.cleaned_data["uom"],
+            size=form.cleaned_data["size"],
+        )
+
+        if item_type == "Product":
+            return redirect(
+                "core:convert",
+            )
+        else:
+            return redirect(
+                "core:task_confirm",
+                task_type="Inbound",
+                item_uuid=new_item.uuid,
+            )
+
     def get_all_products(
         self,
     ) -> QuerySet["core_models.Item"]:
