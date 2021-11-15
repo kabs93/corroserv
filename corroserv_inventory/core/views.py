@@ -24,6 +24,19 @@ def home(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
+def view_specific(request: HttpRequest, item_type: str) -> HttpResponse:
+
+    inventory_listing = Inventory.objects.get_all_by_item_type(item_type)
+
+    context = {
+        "item_type": item_type,
+        "inventory_listing": inventory_listing,
+    }
+
+    return render(request, "core/view/view_specific.html", context=context)
+
+
+@login_required
 def create(request: HttpRequest, item_type: str) -> HttpResponseRedirect:
 
     form = CreateItemForm
@@ -179,8 +192,9 @@ def convert_task_main(request: HttpRequest, convert_task_id: int) -> HttpRespons
             if False in materials_consumption_check:
                 conversion_task_error = "Not all materials have been consumed"
             else:
-                convert_task.task.set_complete()
-                return redirect("core:home")
+                return redirect(
+                    "core:convert_confirm_product_quantity", convert_task_id
+                )
 
     context = {
         "material_listing": material_listing,
@@ -209,9 +223,6 @@ def convert_material_locations(
     consumption_list_inventory_item_ids = [
         item.inventory_item.id for item in consumption_list
     ]
-
-    print("consumption_list_inventory_item_ids")
-    print(consumption_list_inventory_item_ids)
 
     context = {
         "convert_task_id": convert_task_id,
@@ -245,3 +256,63 @@ def convert_material_consumption(
     return render(
         request, "core/task/convert_material_consumption.html", context=context
     )
+
+
+@login_required
+def convert_confirm_product_quantity(
+    request: HttpRequest,
+    convert_task_id: int,
+) -> HttpResponse:
+
+    convert_task = ConvertTask.objects.get(pk=convert_task_id)
+    print("convert_task_id")
+    print(convert_task_id)
+    product_item = convert_task.task.item
+    (
+        item,
+        inventory_item,
+        inventory_listing,
+    ) = Inventory.objects.get_details_for_item(product_item.uuid)
+
+    form_error = ""
+
+    task_type = "Inbound"
+
+    if request.method == "POST":
+        form = InboundForm(request.POST)
+        print("in heere")
+
+        if form.is_valid():
+
+            form_error = item.create_task_and_update_inventory(
+                form_error,
+                form,
+                task_type,
+                item,
+                inventory_listing,
+            )
+
+            if form_error == "":
+                task = convert_task.task
+                task.set_complete()
+                return redirect(
+                    "core:task_confirm",
+                    task_type=task_type,
+                    item_uuid=product_item.uuid,
+                )
+        else:
+            print("form.errors")
+            print(form.errors)
+
+    else:
+        form = InboundForm()
+
+    context = {
+        "page_type": "Confirm_Convert",
+        "convert_task_id": convert_task_id,
+        "form": form,
+        "task_type": task_type,
+        "item": product_item,
+    }
+
+    return render(request, "core/task/task_confirm.html", context=context)

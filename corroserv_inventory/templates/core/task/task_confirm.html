@@ -34,14 +34,23 @@
 					<div class="card-body">
 						<div class="row">
 							<div class="col-md-6 col-lg-6">
-								<form
-									action="{% url 'core:task_confirm' task_type item.uuid %}?inventory={{ inventory_item.id }}"
+
+								{% if page_type == "Confirm_Convert" %}
+								<form method="post">
+									{% csrf_token %}
+									{{ form }}
+									<button type="submit" class="btn btn-success mb-3">Confirm</button>
+									{{ location_input_error }}
+								</form>
+								{% else %}
+								<form action="{% url 'core:task_confirm' task_type item.uuid %}?inventory={{ inventory_item.id }}"
 									method="post">
 									{% csrf_token %}
 									{{ form }}
 									<button type="submit" class="btn btn-success mb-3">Confirm</button>
 									{{ location_input_error }}
 								</form>
+								{% endif %}
 							</div>
 						</div>
 					</div>

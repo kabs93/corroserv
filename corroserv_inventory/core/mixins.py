@@ -61,6 +61,8 @@ class ItemMixin(models.Model):
 
 class TaskMixin(models.Model):
     def set_complete(self):
+        print("self")
+        print(self)
         core_models.TaskStatus.objects.create(
             task=self,
             status="CTD",

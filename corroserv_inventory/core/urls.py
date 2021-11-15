@@ -9,6 +9,15 @@ urlpatterns = [
     path("about/", TemplateView.as_view(template_name="core/about.html"), name="about"),
     path("home/", views.home, name="home"),
     path(
+        "view/",
+        include(
+            [
+                # path("", views.view_all, name="view_all"),
+                path("<str:item_type>/", views.view_specific, name="view_specific"),
+            ]
+        ),
+    ),
+    path(
         "create/",
         include(
             [
@@ -44,6 +53,11 @@ urlpatterns = [
                                 "main/<int:convert_task_id>/<int:convert_material_id>/<uuid:location_uuid>/",
                                 views.convert_material_consumption,
                                 name="convert_material_consumption",
+                            ),
+                            path(
+                                "confirm/<int:convert_task_id>/",
+                                views.convert_confirm_product_quantity,
+                                name="convert_confirm_product_quantity",
                             ),
                         ]
                     ),
