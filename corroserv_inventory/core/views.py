@@ -280,7 +280,7 @@ def convert_confirm_product_quantity(
 
     if request.method == "POST":
         form = InboundForm(request.POST)
-        print("in heere")
+        print("in here")
 
         if form.is_valid():
 
@@ -313,6 +313,7 @@ def convert_confirm_product_quantity(
         "form": form,
         "task_type": task_type,
         "item": product_item,
+        "inventory_listing": inventory_listing,
     }
 
     return render(request, "core/task/task_confirm.html", context=context)
