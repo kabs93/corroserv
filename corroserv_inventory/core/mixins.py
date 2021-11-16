@@ -54,16 +54,33 @@ class ItemMixin(models.Model):
             # location_input = None
             form_error = "Location does not exist"
 
-        return form_error
+        return (
+            form_error,
+            location_input,
+            quantity_input,
+        )
 
     class Meta:
         abstract = True
 
 
 class TaskMixin(models.Model):
-    def set_complete(self):
-        print("self")
-        print(self)
+    def set_complete(
+        self,
+        product_quantity: int,
+        product_location: "core_models.Location",
+    ) -> None:
+
+        ################################################
+        # Update Quantity and Location in Task table
+        ################################################
+        self.quantity = product_quantity
+        self.location = product_location
+        self.save()
+
+        ################################################
+        # Update TaskStatus to CTD
+        ################################################
         core_models.TaskStatus.objects.create(
             task=self,
             status="CTD",

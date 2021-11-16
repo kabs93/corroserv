@@ -94,6 +94,7 @@ class Task(TaskMixin):
     type = models.ForeignKey(TaskType, on_delete=models.PROTECT)
     item = models.ForeignKey(Item, on_delete=models.PROTECT)
     location = models.ForeignKey(Location, null=True, on_delete=models.PROTECT)
+    quantity = models.IntegerField(null=True)
 
     objects = TaskManager()
 
@@ -119,7 +120,6 @@ class TaskStatus(models.Model):
 
 class ConsumeTask(models.Model):
     task = models.ForeignKey(Task, on_delete=models.PROTECT)
-    quantity = models.IntegerField()
 
 
 class SingleOpenInventoryConsume(models.Model):
@@ -143,13 +143,12 @@ class ConvertMaterial(models.Model):
 class ConvertMaterialConsumption(models.Model):
     convert_material = models.ForeignKey(ConvertMaterial, on_delete=models.PROTECT)
     inventory_item = models.ForeignKey(Inventory, on_delete=models.PROTECT)
-    consume_quantity = models.FloatField()
+    consume_amount = models.FloatField()
 
 
 class TransferTask(models.Model):
     task = models.ForeignKey(Task, on_delete=models.PROTECT)
     to_location = models.ForeignKey(Location, on_delete=models.PROTECT)
-    quantity = models.IntegerField()
 
 
 class SingleOpenInventoryTransfer(models.Model):
@@ -172,4 +171,3 @@ class InterfaceMovementTask(models.Model):
         max_length=3,
         choices=STATUS_TYPES,
     )
-    quantity = models.IntegerField()

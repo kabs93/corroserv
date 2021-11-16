@@ -83,7 +83,7 @@ def convert_material_consumption(
                 ConvertMaterialConsumption.objects.create(
                     convert_material=convert_material,
                     inventory_item=convert_material_inventory,
-                    consume_quantity=consumed_qty,
+                    consume_amount=consumed_qty,
                 )
 
                 if item["status"] == "Open":
