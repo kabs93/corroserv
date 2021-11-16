@@ -276,7 +276,7 @@ def convert_confirm_product_quantity(
 
     form_error = ""
 
-    task_type = "Inbound"
+    task_type = "Convert_Inbound"
 
     if request.method == "POST":
         form = InboundForm(request.POST)
@@ -297,7 +297,7 @@ def convert_confirm_product_quantity(
                 task.set_complete()
                 return redirect(
                     "core:task_confirm",
-                    task_type=task_type,
+                    task_type="Inbound",
                     item_uuid=product_item.uuid,
                 )
         else:

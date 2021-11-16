@@ -16,7 +16,7 @@ class ItemMixin(models.Model):
     ):
         quantity_input = (
             int(form.cleaned_data["quantity"])
-            if task_type == "Inbound"
+            if task_type == "Inbound" or task_type == "Convert_Inbound"
             else -int(form.cleaned_data["quantity"])
         )
         try:
@@ -24,12 +24,13 @@ class ItemMixin(models.Model):
                 name=form.cleaned_data["location"]
             )
             with transaction.atomic():
-                task_obj = core_models.Task.objects.create(
-                    item=item,
-                    location=location_input,
-                    type=core_models.TaskType.objects.get(name=task_type),
-                )
-                core_models.TaskStatus.objects.create(task=task_obj, status="CTD")
+                if task_type != "Convert_Inbound":
+                    task_obj = core_models.Task.objects.create(
+                        item=item,
+                        location=location_input,
+                        type=core_models.TaskType.objects.get(name=task_type),
+                    )
+                    core_models.TaskStatus.objects.create(task=task_obj, status="CTD")
 
                 try:
                     inventory_list_item = inventory_listing.get(location=location_input)
@@ -40,7 +41,7 @@ class ItemMixin(models.Model):
                     else:
                         form_error = "Input quantity is higher than the quantity available in this location"
                 except core_models.Inventory.DoesNotExist:
-                    if task_type == "Inbound":
+                    if task_type == "Inbound" or task_type == "Convert_Inbound":
                         core_models.Inventory.objects.create(
                             item=item,
                             location=location_input,
