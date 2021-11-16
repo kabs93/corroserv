@@ -22,7 +22,9 @@ class InventoryManager(models.Manager):
         item_uuid: uuid,
         inventory_item_id: int = None,
     ) -> Union["core_models.Item", QuerySet["core_models.Inventory"]]:
+
         item = core_models.Item.objects.get(uuid=item_uuid)
+
         if inventory_item_id:
             inventory_item = self.get(pk=inventory_item_id)
         else:
@@ -36,7 +38,10 @@ class InventoryManager(models.Manager):
         material: "core_models.ConvertMaterial",
     ) -> QuerySet["core_models.Inventory"]:
 
-        return self.filter(item=core_models.Item.objects.get(id=material.item.id))
+        return self.filter(
+            item=core_models.Item.objects.get(id=material.item.id),
+            quantity__gt=0,
+        )
 
 
 class ItemManager(models.Manager):
