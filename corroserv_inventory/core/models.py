@@ -159,7 +159,7 @@ class SingleOpenInventoryTransfer(models.Model):
     )
 
 
-class InterfaceMovementTask(models.Model):
+class InterfaceTask(models.Model):
     INBOUND = "IN"
     OUTBOUND = "OUT"
     STATUS_TYPES = [

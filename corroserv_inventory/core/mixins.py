@@ -14,6 +14,11 @@ class ItemMixin(models.Model):
         item: "core_models.Item",
         inventory_listing: QuerySet["core_models.Inventory"],
     ):
+        interface_task_type = {
+            "Inbound": "IN",
+            "Outbound": "OUT",
+        }
+
         quantity_input = (
             int(form.cleaned_data["quantity"])
             if task_type == "Inbound" or task_type == "Convert_Inbound"
@@ -30,6 +35,9 @@ class ItemMixin(models.Model):
                         location=location_input,
                         quantity=quantity_input,
                         type=core_models.TaskType.objects.get(name=task_type),
+                    )
+                    core_models.InterfaceTask.objects.create(
+                        task=task_obj, type=interface_task_type[task_type]
                     )
                     core_models.TaskStatus.objects.create(task=task_obj, status="CTD")
 
