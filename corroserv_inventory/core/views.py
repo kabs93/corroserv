@@ -98,7 +98,11 @@ def task_confirm(
             form = ConsumeForm(request.POST)
 
         if form.is_valid():
-            form_error = item.create_task_and_update_inventory(
+            (
+                form_error,
+                product_location,
+                product_quantity,
+            ) = item.create_task_and_update_inventory(
                 form_error,
                 form,
                 task_type,

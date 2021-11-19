@@ -28,6 +28,7 @@ class ItemMixin(models.Model):
                     task_obj = core_models.Task.objects.create(
                         item=item,
                         location=location_input,
+                        quantity=quantity_input,
                         type=core_models.TaskType.objects.get(name=task_type),
                     )
                     core_models.TaskStatus.objects.create(task=task_obj, status="CTD")
@@ -71,16 +72,12 @@ class TaskMixin(models.Model):
         product_location: "core_models.Location",
     ) -> None:
 
-        ################################################
         # Update Quantity and Location in Task table
-        ################################################
         self.quantity = product_quantity
         self.location = product_location
         self.save()
 
-        ################################################
         # Update TaskStatus to CTD
-        ################################################
         core_models.TaskStatus.objects.create(
             task=self,
             status="CTD",

@@ -77,7 +77,7 @@ class SingleOpenInventory(models.Model):
     inventory_item = models.ForeignKey(
         Inventory, related_name="open_inventory_items", on_delete=models.PROTECT
     )
-    remaining = models.DecimalField(max_digits=2, decimal_places=2)
+    remaining = models.FloatField()
 
 
 class TaskType(models.Model):
@@ -144,6 +144,7 @@ class ConvertMaterialConsumption(models.Model):
     convert_material = models.ForeignKey(ConvertMaterial, on_delete=models.PROTECT)
     inventory_item = models.ForeignKey(Inventory, on_delete=models.PROTECT)
     consume_amount = models.FloatField()
+    completely_consumed = models.BooleanField(default=False)
 
 
 class TransferTask(models.Model):
