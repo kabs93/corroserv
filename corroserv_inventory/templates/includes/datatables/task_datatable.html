@@ -1,0 +1,57 @@
+{% load static %}
+
+<div class="table-responsive">
+  <table id="basic-datatables" class="display table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Type</th>
+        <th>Location</th>
+        <th>Quantity</th>
+        {% if page_type == "select_task" %}
+        <th></th>
+        {% endif %}
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+        <th>Item</th>
+        <th>Type</th>
+        <th>Location</th>
+        <th>Quantity</th>
+        {% if page_type == "select_task" %}
+        <th></th>
+        {% endif %}
+      </tr>
+    </tfoot>
+    <tbody>
+      {% for inventory_item in inventory_listing %}
+      <tr>
+        <td>{{ inventory_item.item.name }}</td>
+        <td>{{ inventory_item.item.type.name }}</td>
+        <td>{{ inventory_item.location.name }}</td>
+        <td>{{ inventory_item.quantity }}</td>
+        {% if page_type == "select_task" %}
+        <td>
+          <button class="btn btn-success mb-3">
+            <a
+              href="#">Select</a>
+          </button>
+        </td>
+        {% elif page_type == "select_material" %}
+        <td>
+          {% if inventory_item.id in consumption_list_inventory_item_ids %}
+          <button disabled class="btn btn-done mb-3">Done</button>
+          {% else %}
+          <button class="btn btn-success mb-3">
+            <a
+              href="#">Select</a>
+          </button>
+          {% endif %}
+        </td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

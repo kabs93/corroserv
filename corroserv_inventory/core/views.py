@@ -12,6 +12,7 @@ from .models import (
     ConvertTask,
     Inventory,
     Item,
+    Task,
 )
 
 
@@ -59,7 +60,23 @@ def create(request: HttpRequest, item_type: str) -> HttpResponseRedirect:
 @login_required
 def task(request: HttpRequest, task_type: str) -> HttpResponse:
 
-    item_type = request.GET.get("item_type", None)
+    task_listing = Task.objects.get_all_by_task_type(task_type)
+
+    context = {
+        "task_type": task_type,
+        "task_listing": task_listing,
+    }
+
+    return render(request, "core/task/task.html", context=context)
+
+
+@login_required
+def task_select_item(request: HttpRequest, task_type: str) -> HttpResponse:
+
+    if task_type == "Convert":
+        item_type = "Product"
+    else:
+        item_type = request.GET.get("item_type", None)
 
     inventory_listing = Inventory.objects.get_all_by_item_type(item_type)
 
@@ -70,7 +87,7 @@ def task(request: HttpRequest, task_type: str) -> HttpResponse:
         "inventory_listing": inventory_listing,
     }
 
-    return render(request, "core/task/task.html", context=context)
+    return render(request, "core/task/task-select-item.html", context=context)
 
 
 @login_required
@@ -148,7 +165,7 @@ def task_confirm(
 
 
 @login_required
-def convert(request: HttpRequest) -> HttpResponse:
+def convert_select_product(request: HttpRequest) -> HttpResponse:
 
     product_listing = Item.objects.get_all_products()
 

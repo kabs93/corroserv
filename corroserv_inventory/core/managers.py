@@ -79,6 +79,13 @@ class ItemManager(models.Manager):
 
 
 class TaskManager(models.Manager):
+    def get_all_by_task_type(
+        self,
+        task_type: str,
+    ):
+
+        self.filter(type__name=task_type)
+
     def create_convert_task(
         self,
         task_type: str,

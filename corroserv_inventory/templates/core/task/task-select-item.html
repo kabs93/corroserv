@@ -33,16 +33,13 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="card">
-					<div class="card-header space-between-div">
-						<div class="card-title">{{ task_type | capfirst }} History</div>
-						{% if task_type == "Inbound" %}
-						<div><button class="btn btn-success mb-3"><a href="#">New</a></button></div>
-						{% endif %}
+					<div class="card-header">
+						<div class="card-title">Choose Item Type</div>
 					</div>
 					<div class="card-body">
 						<div class="row">
-							<div class="col-md-12 col-lg-12">
-								{% include 'includes/datatables/task_datatable.html' %}
+							<div class="col-md-6 col-lg-6">
+								{% include 'includes/forms/task_item_type_form.html' %}
 							</div>
 						</div>
 					</div>
@@ -50,6 +47,28 @@
 			</div>
 		</div>
 	</div>
+	{% if item_type %}
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card">
+				<div class="card-header space-between-div">
+					<div class="card-title">Choose {{ item_type | capfirst }}</div>
+					{% if task_type == "Inbound" %}
+					<div><button class="btn btn-success mb-3"><a href="{% url 'core:create' item_type %}">New</a></button></div>
+					{% endif %}
+				</div>
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-12 col-lg-12">
+							{% include 'includes/datatables/inventory_item_datatable.html' %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endif %}
+</div>
 </div>
 
 {% endblock content %}

@@ -29,11 +29,21 @@ urlpatterns = [
         "task/",
         include(
             [
+                path("<str:task_type>/", views.task, name="task"),
                 path(
-                    "convert/",
+                    "<str:task_type>/<uuid:item_uuid>/",
+                    views.task_confirm,
+                    name="task_confirm",
+                ),
+                path(
+                    "Convert/",
                     include(
                         [
-                            path("", views.convert, name="convert"),
+                            path(
+                                "",
+                                views.convert_select_product,
+                                name="convert_select_product",
+                            ),
                             path(
                                 "materials/<uuid:product_uuid>/",
                                 views.convert_materials,
@@ -61,12 +71,6 @@ urlpatterns = [
                             ),
                         ]
                     ),
-                ),
-                path("<str:task_type>/", views.task, name="task"),
-                path(
-                    "<str:task_type>/<uuid:item_uuid>/",
-                    views.task_confirm,
-                    name="task_confirm",
                 ),
             ]
         ),
