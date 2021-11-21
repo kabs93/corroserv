@@ -34,7 +34,7 @@
 						</div>
 						<div class="card-body">
 							<div class="row">
-								<div class="col-md-6 col-lg-6">
+								<div class="col-md-8 ml-auto mr-auto">
 									<label class="mb-3"><b>Select Materials:</b></label>
 									<div class="inline-form-group">
 										<div class="form-group form-group-default inline-form-group">
@@ -46,12 +46,32 @@
 										</div>
 									</div>
 								</div>
-								<ul v-for="selectedMaterial in selectedMaterials">
-									<li>[[ selectedMaterial.name ]] <span>X</span></li>
-								</ul>
 							</div>
-							<button @click="onConfirm" class="btn btn-success mb-3">Confirm</button>
+							<div class="row">
+								<!-- <ul v-for="selectedMaterial in selectedMaterials">
+										<li>[[ selectedMaterial.name ]] <span>X</span></li>
+									</ul> -->
+								<div class="col-md-6 ml-auto mr-auto">
+									<div class="card">
+										<div class="card-header">
+											<div class="card-title">Selected Materials</div>
+										</div>
+										<div class="card-body pb-0" v-for="(selectedMaterial,index) in selectedMaterials" :key="index">
+											<div class="d-flex">
+												<div class="flex-1 pt-1 ml-2">
+													<h4 class="fw-bold mb-1">[[ selectedMaterial.name ]]</h4>
+												</div>
+												<div class="d-flex ml-auto align-items-center">
+													<h3 @click="selectedMaterials.splice(index, 1)" class="text-danger fw-bold">X</h3>
+												</div>
+											</div>
+											<div class="separator-dashed"></div>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
+						<button @click="onConfirm" class="btn btn-success mb-3">Confirm</button>
 					</div>
 				</div>
 			</div>
@@ -101,6 +121,7 @@
 			onSelect: function () {
 				if (!this.selectedMaterials.includes(this.selected)) {
 					this.selectedMaterials.push(this.selected)
+					this.selected = null
 				}
 			},
 			onConfirm: async function () {

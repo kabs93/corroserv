@@ -22,9 +22,8 @@
         <td>{{ product.name }}</td>
         <td>{{ product.type.name }}</td>
         <td>
-          <button class="btn btn-success mb-3">
-            <a href="{% url 'core:convert_materials' product.uuid %}">Select</a>
-          </button>
+          <a type="button" class="btn btn-success mb-3"
+            href="{% url 'core:convert_materials' product.uuid %}">Select</a>
         </td>
       </tr>
       {% endfor %}

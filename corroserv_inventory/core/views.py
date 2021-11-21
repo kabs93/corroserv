@@ -206,8 +206,11 @@ def convert_select_product(request: HttpRequest) -> HttpResponse:
 @login_required
 def convert_materials(request: HttpRequest, product_uuid: uuid) -> HttpResponse:
 
+    product = Item.objects.get(uuid=product_uuid)
+
     context = {
         "product_uuid": product_uuid,
+        "product": product,
         "page_type": "select_product_materials",
     }
 
