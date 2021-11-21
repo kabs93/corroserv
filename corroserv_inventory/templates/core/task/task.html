@@ -35,9 +35,12 @@
 				<div class="card">
 					<div class="card-header space-between-div">
 						<div class="card-title">{{ task_type | capfirst }} History</div>
-						{% if task_type == "Inbound" %}
-						<div><button class="btn btn-success mb-3"><a href="#">New</a></button></div>
+						{% if task_type == "Convert" %}
+						<a type="button" class="btn btn-success mb-3" href="{% url 'core:convert_select_product' %}">New</a>
+						{% else %}
+						<a type="button" class="btn btn-success mb-3" href="{% url 'core:task_select_item' task_type %}">New</a>
 						{% endif %}
+
 					</div>
 					<div class="card-body">
 						<div class="row">

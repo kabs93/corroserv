@@ -129,7 +129,7 @@
 						{ headers: { 'X-CSRFToken': this.csrftoken, } })
 					if (response.status === 200) {
 						console.log(response)
-						window.location.replace(`/task/convert/main/${convert_task_id}/${convert_material_id}/`);
+						window.location.replace(`/task/Convert/main/${convert_task_id}/${convert_material_id}/`);
 					}
 				} catch (error) {
 					console.error("Error: ", error);

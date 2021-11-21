@@ -4,52 +4,47 @@
   <table id="basic-datatables" class="display table table-striped table-hover">
     <thead>
       <tr>
-        <th>Item</th>
+        <th>Task</th>
         <th>Type</th>
+        <th>Item</th>
         <th>Location</th>
         <th>Quantity</th>
-        {% if page_type == "select_task" %}
-        <th></th>
-        {% endif %}
+        <th>Status</th>
       </tr>
     </thead>
     <tfoot>
       <tr>
-        <th>Item</th>
+        <th>Task</th>
         <th>Type</th>
+        <th>Item</th>
         <th>Location</th>
         <th>Quantity</th>
-        {% if page_type == "select_task" %}
-        <th></th>
-        {% endif %}
+        <th>Status</th>
       </tr>
     </tfoot>
     <tbody>
-      {% for inventory_item in inventory_listing %}
+      {% for task in task_listing %}
       <tr>
-        <td>{{ inventory_item.item.name }}</td>
-        <td>{{ inventory_item.item.type.name }}</td>
-        <td>{{ inventory_item.location.name }}</td>
-        <td>{{ inventory_item.quantity }}</td>
-        {% if page_type == "select_task" %}
+        <td>{{ forloop.counter }}</td>
+        <td>{{ task.type.name }}</td>
+        <td>{{ task.item.name }}</td>
         <td>
-          <button class="btn btn-success mb-3">
-            <a
-              href="#">Select</a>
-          </button>
-        </td>
-        {% elif page_type == "select_material" %}
-        <td>
-          {% if inventory_item.id in consumption_list_inventory_item_ids %}
-          <button disabled class="btn btn-done mb-3">Done</button>
+          {% if task.location.name == None %}
+          Pending
           {% else %}
-          <button class="btn btn-success mb-3">
-            <a
-              href="#">Select</a>
-          </button>
+          {{ task.location.name }}
           {% endif %}
         </td>
-        {% endif %}
+        <td>
+          {% if task.quantity == None %}
+          Pending
+          {% else %}
+          {{ task.quantity }}
+          {% endif %}
+        </td>
+        <td>
+          <a href="{% url 'core:task_details' task.id %}">{{ task.latest_status }}</a>
+        </td>
       </tr>
       {% endfor %}
     </tbody>

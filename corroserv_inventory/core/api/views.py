@@ -79,29 +79,19 @@ def convert_material_consumption(
 
                     if remaining == 0:
                         completely_consumed = True
-                        open_inventory_item.delete()
-                        convert_material_inventory.quantity -= 1
-                        convert_material_inventory.save()
-
                     else:
                         completely_consumed = False
-                        open_inventory_item.remaining = remaining
-                        open_inventory_item.save()
 
                 elif item["status"] == "Unopened":
+
+                    open_inventory_item = None
                     consumed = capacity - remaining
 
                     if remaining == 0:
                         completely_consumed = True
-                        convert_material_inventory.quantity -= 1
-                        convert_material_inventory.save()
 
                     else:
                         completely_consumed = False
-                        SingleOpenInventory.objects.create(
-                            inventory_item=convert_material_inventory,
-                            remaining=remaining,
-                        )
 
                 else:
                     print("HANDLE ERROR")
@@ -111,6 +101,7 @@ def convert_material_consumption(
                     inventory_item=convert_material_inventory,
                     consume_amount=consumed,
                     completely_consumed=completely_consumed,
+                    open_inventory=open_inventory_item,
                 )
 
         return Response(

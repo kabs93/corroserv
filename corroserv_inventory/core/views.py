@@ -1,6 +1,7 @@
 import uuid
 
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.http import HttpRequest, HttpResponse
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect, render
@@ -165,6 +166,31 @@ def task_confirm(
 
 
 @login_required
+def task_details(request: HttpRequest, task_id: int) -> HttpResponse:
+
+    task = Task.objects.get(pk=task_id)
+    task_type = task.type.name
+
+    if task.latest_status == "Completed":
+        print("WOKAY")
+        return redirect("core:task", task_type)
+    else:
+        # Need to Refactor!!!
+        print("NOT WOKAY")
+        if task_type == "Convert":
+            convert_task = ConvertTask.objects.get(task=task)
+            return redirect("core:convert_task_main", convert_task.id)
+        else:
+            return redirect("core:task", task_type)
+
+    # context = {
+    #     "task": task,
+    # }
+
+    # return render(request, "core/task/task.html", context=context)
+
+
+@login_required
 def convert_select_product(request: HttpRequest) -> HttpResponse:
 
     product_listing = Item.objects.get_all_products()
@@ -205,11 +231,15 @@ def convert_task_main(request: HttpRequest, convert_task_id: int) -> HttpRespons
     conversion_task_error = None
 
     if request.method == "POST":
+        if "delete_convert_task" in request.POST:
+            convert_task.task.delete()
+            return redirect("core:task", "Convert")
         if "confirm_conversion_task" in request.POST:
             materials_consumption_check = [
                 material.item.id in consumption_list_item_ids
                 for material in material_listing
             ]
+
             if False in materials_consumption_check:
                 conversion_task_error = "Not all materials have been consumed"
             else:
@@ -301,30 +331,33 @@ def convert_confirm_product_quantity(
 
     if request.method == "POST":
         form = InboundForm(request.POST)
-        print("in here")
 
         if form.is_valid():
-
-            (
-                form_error,
-                product_location,
-                product_quantity,
-            ) = item.create_task_and_update_inventory(
-                form_error,
-                form,
-                task_type,
-                item,
-                inventory_listing,
-            )
-
-            if form_error == "":
-                task = convert_task.task
-                task.set_complete(product_quantity, product_location)
-                return redirect(
-                    "core:task_confirm",
-                    task_type="Inbound",
-                    item_uuid=product_item.uuid,
+            with transaction.atomic():
+                (
+                    form_error,
+                    product_location,
+                    product_quantity,
+                ) = item.create_task_and_update_inventory(
+                    form_error,
+                    form,
+                    task_type,
+                    item,
+                    inventory_listing,
                 )
+
+                if form_error == "":
+                    conversion_task_error = (
+                        convert_task.confirm_consumption_and_update_inventory()
+                    )
+                    if not conversion_task_error:
+                        parent_task = convert_task.task
+                        parent_task.set_complete(product_quantity, product_location)
+                        return redirect(
+                            "core:task_confirm",
+                            task_type="Inbound",
+                            item_uuid=product_item.uuid,
+                        )
         else:
             print("form.errors")
             print(form.errors)

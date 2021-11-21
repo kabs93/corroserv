@@ -93,3 +93,48 @@ class TaskMixin(models.Model):
 
     class Meta:
         abstract = True
+
+
+class ConvertTaskMixin(models.Model):
+    def confirm_consumption_and_update_inventory(self) -> str:
+
+        conversion_task_error = None
+
+        materials = self.materials.all()
+
+        with transaction.atomic():
+            for material in materials:
+                for consumption_item in material.consumption_items.all():
+
+                    consumption_amount = consumption_item.consume_amount
+                    material_inventory = consumption_item.inventory_item
+
+                    if consumption_item.open_inventory_id:
+                        open_inventory_item = (
+                            core_models.SingleOpenInventory.objects.get(
+                                pk=consumption_item.open_inventory_id
+                            )
+                        )
+                        if consumption_item.completely_consumed:
+                            open_inventory_item.delete()
+                            material_inventory.quantity -= 1
+                            material_inventory.save()
+                        else:
+                            open_inventory_item.remaining = (
+                                open_inventory_item.remaining - consumption_amount
+                            )
+                            open_inventory_item.save()
+                    else:
+                        if consumption_item.completely_consumed:
+                            material_inventory.quantity -= 1
+                            material_inventory.save()
+                        else:
+                            core_models.SingleOpenInventory.objects.create(
+                                inventory_item=material_inventory,
+                                remaining=material.item.size - consumption_amount,
+                            )
+
+        return conversion_task_error
+
+    class Meta:
+        abstract = True

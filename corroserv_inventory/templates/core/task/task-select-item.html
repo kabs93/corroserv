@@ -30,6 +30,7 @@
 		</div>
 	</div>
 	<div class="page-inner">
+		{% if task_type != 'Convert' %}
 		<div class="row">
 			<div class="col-md-12">
 				<div class="card">
@@ -46,29 +47,29 @@
 				</div>
 			</div>
 		</div>
-	</div>
-	{% if item_type %}
-	<div class="row">
-		<div class="col-md-12">
-			<div class="card">
-				<div class="card-header space-between-div">
-					<div class="card-title">Choose {{ item_type | capfirst }}</div>
-					{% if task_type == "Inbound" %}
-					<div><button class="btn btn-success mb-3"><a href="{% url 'core:create' item_type %}">New</a></button></div>
-					{% endif %}
-				</div>
-				<div class="card-body">
-					<div class="row">
-						<div class="col-md-12 col-lg-12">
-							{% include 'includes/datatables/inventory_item_datatable.html' %}
+		{% endif %}
+		{% if item_type %}
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card">
+					<div class="card-header space-between-div">
+						<div class="card-title">Choose {{ item_type | capfirst }}</div>
+						{% if task_type == "Inbound" %}
+						<div><button class="btn btn-success mb-3"><a href="{% url 'core:create' item_type %}">New</a></button></div>
+						{% endif %}
+					</div>
+					<div class="card-body">
+						<div class="row">
+							<div class="col-md-12 col-lg-12">
+								{% include 'includes/datatables/inventory_item_datatable.html' %}
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+		{% endif %}
 	</div>
-	{% endif %}
-</div>
 </div>
 
 {% endblock content %}

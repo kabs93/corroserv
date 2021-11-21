@@ -101,6 +101,52 @@
 						</ul>
 					</div>
 				</li>
+				<li class="nav-item">
+					<a data-toggle="collapse" href="#tasks">
+						<i class="fas fa-bars"></i>
+						<p>Tasks</p>
+						<span class="caret"></span>
+					</a>
+					<div class="collapse" id="tasks">
+						<ul class="nav nav-collapse">
+							<li>
+								<a href="{% url 'core:task' 'Consume' %}">
+									<span class="sub-item">Consume</span>
+								</a>
+							</li>
+							<li>
+								<a href="{% url 'core:task' 'Convert' %}">
+									<span class="sub-item">Convert</span>
+								</a>
+							</li>
+							<li>
+								<a data-toggle="collapse" href="#movementTasks">
+									<span class="sub-item">Movement</span>
+									<span class="caret"></span>
+								</a>
+								<div class="collapse" id="movementTasks">
+									<ul class="nav nav-collapse subnav">
+										<li>
+											<a href="{% url 'core:task' 'Inbound' %}">
+												<span class="sub-item">Inbound</span>
+											</a>
+										</li>
+										<li>
+											<a href="{% url 'core:task' 'Outbound' %}">
+												<span class="sub-item">Outbound</span>
+											</a>
+										</li>
+										<li>
+											<a href="{% url 'core:task' 'Transfer' %}">
+												<span class="sub-item">Transfer</span>
+											</a>
+										</li>
+									</ul>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</li>
 				<li class="nav-section">
 					<span class="sidebar-mini-icon">
 						<i class="fa fa-ellipsis-h"></i>
@@ -143,91 +189,48 @@
 						</ul>
 					</div>
 				</li>
-				<li class="nav-item {% if 'ui-' in segment %} active {% endif %}">
-					<a href="{% url 'core:task' 'Consume' %}">
-						<i class="fas fa-layer-group"></i>
-						<p>Consume</p>
-					</a>
-				</li>
-				<li class="nav-item {% if 'ui-' in segment %} active {% endif %}">
-					<a href="{% url 'core:task' 'Convert' %}">
-						<i class="fas fa-layer-group"></i>
-						<p>Convert</p>
-					</a>
-				</li>
-				<li class="nav-item {% if 'layout' in segment %} active {% endif %}">
-					<a data-toggle="collapse" href="#createMovement">
-						<i class="fas fa-th-list"></i>
-						<p>Movement</p>
-						<span class="caret"></span>
-					</a>
-					<div class="collapse" id="createMovement">
-						<ul class="nav nav-collapse">
-							<li>
-								<a href="{% url 'core:task' 'Inbound' %}">
-									<span class="sub-item">Inbound</span>
-								</a>
-							</li>
-							<li>
-								<a href="{% url 'core:task' 'Outbound' %}">
-									<span class="sub-item">Outbound</span>
-								</a>
-							</li>
-							<li>
-								<a href="/layout-compact-sidebar.html">
-									<span class="sub-item">Transfer</span>
-								</a>
-							</li>
-						</ul>
-					</div>
-				</li>
 				<li class="nav-item">
-					<a data-toggle="collapse" href="#submenu">
+					<a data-toggle="collapse" href="#createTask">
 						<i class="fas fa-bars"></i>
-						<p>Menu Levels</p>
+						<p>Task</p>
 						<span class="caret"></span>
 					</a>
-					<div class="collapse" id="submenu">
+					<div class="collapse" id="createTask">
 						<ul class="nav nav-collapse">
 							<li>
-								<a data-toggle="collapse" href="#subnav1">
-									<span class="sub-item">Level 1</span>
+								<a href="{% url 'core:task_select_item' 'Consume' %}">
+									<span class="sub-item">Consume</span>
+								</a>
+							</li>
+							<li>
+								<a href="{% url 'core:convert_select_product' %}">
+									<span class="sub-item">Convert</span>
+								</a>
+							</li>
+							<li>
+								<a data-toggle="collapse" href="#createMovementTask">
+									<span class="sub-item">Movement</span>
 									<span class="caret"></span>
 								</a>
-								<div class="collapse" id="subnav1">
+								<div class="collapse" id="createMovementTask">
 									<ul class="nav nav-collapse subnav">
 										<li>
-											<a href="#">
-												<span class="sub-item">Level 2</span>
+											<a href="{% url 'core:task_select_item' 'Inbound' %}">
+												<span class="sub-item">Inbound</span>
 											</a>
 										</li>
 										<li>
-											<a href="#">
-												<span class="sub-item">Level 2</span>
+											<a href="{% url 'core:task_select_item' 'Outbound' %}">
+												<span class="sub-item">Outbound</span>
+											</a>
+										</li>
+										<li>
+											<a href="{% url 'core:task_select_item' 'Transfer' %}">
+												<span class="sub-item">Transfer</span>
 											</a>
 										</li>
 									</ul>
 								</div>
-							</li>
-							<li>
-								<a data-toggle="collapse" href="#subnav2">
-									<span class="sub-item">Level 1</span>
-									<span class="caret"></span>
-								</a>
-								<div class="collapse" id="subnav2">
-									<ul class="nav nav-collapse subnav">
-										<li>
-											<a href="#">
-												<span class="sub-item">Level 2</span>
-											</a>
-										</li>
-									</ul>
-								</div>
-							</li>
-							<li>
-								<a href="#">
-									<span class="sub-item">Level 1</span>
-								</a>
 							</li>
 						</ul>
 					</div>
