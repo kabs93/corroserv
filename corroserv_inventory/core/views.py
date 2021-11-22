@@ -6,7 +6,7 @@ from django.http import HttpRequest, HttpResponse
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect, render
 
-from .forms import ConsumeForm, CreateItemForm, InboundForm, OutboundForm, TransferForm
+from .forms import CreateItemForm, InboundForm
 from .models import (
     ConvertMaterial,
     ConvertMaterialConsumption,
@@ -14,6 +14,11 @@ from .models import (
     Inventory,
     Item,
     Task,
+)
+from .utils import (
+    formSuccessRedirectByTaskType,
+    getFormByTaskType,
+    processFormByTaskType,
 )
 
 
@@ -106,61 +111,17 @@ def task_confirm(
     ) = Inventory.objects.get_details_for_item(item_uuid, inventory_item_id)
 
     form_error = ""
-
     if request.method == "POST":
-        if task_type == "Inbound":
-            form = InboundForm(request.POST)
-        elif task_type == "Outbound":
-            form = OutboundForm(request.POST)
-        elif task_type == "Consume":
-            form = ConsumeForm(request.POST)
-        elif task_type == "Transfer":
-            form = TransferForm(request.POST)
+        form_error, product_location, product_quantity = processFormByTaskType(
+            request, task_type, item, inventory_listing
+        )
 
-        if form.is_valid():
-            (
-                form_error,
-                product_location,
-                product_quantity,
-            ) = item.create_task_and_update_inventory(
-                form_error,
-                form,
-                task_type,
-                item,
-                inventory_listing,
-            )
-            if form_error == "":
-                if task_type == "Transfer":
-                    return redirect("core:task", task_type)
-                else:
-                    return redirect(request.path_info)
-        else:
-            print("form.errors")
-            print(form.errors)
+        if form_error == "":
+            success_redirect = formSuccessRedirectByTaskType(request, task_type)
+            return success_redirect
 
     else:
-        if task_type == "Inbound":
-            if inventory_item:
-                form = InboundForm(initial={"location": inventory_item.location})
-            else:
-                form = InboundForm()
-        elif task_type == "Outbound":
-            if inventory_item:
-                form = OutboundForm(initial={"location": inventory_item.location})
-            else:
-                form = OutboundForm()
-        elif task_type == "Consume":
-            if inventory_item:
-                form = ConsumeForm(initial={"location": inventory_item.location})
-            else:
-                form = ConsumeForm()
-        elif task_type == "Transfer":
-            if inventory_item:
-                form = TransferForm(initial={"from_location": inventory_item.location})
-            else:
-                form = TransferForm()
-        else:
-            form = None
+        form = getFormByTaskType(task_type, inventory_item)
 
     context = {
         "task_type": task_type,
@@ -329,8 +290,6 @@ def convert_confirm_product_quantity(
 ) -> HttpResponse:
 
     convert_task = ConvertTask.objects.get(pk=convert_task_id)
-    print("convert_task_id")
-    print(convert_task_id)
     product_item = convert_task.task.item
     (
         item,
@@ -338,42 +297,29 @@ def convert_confirm_product_quantity(
         inventory_listing,
     ) = Inventory.objects.get_details_for_item(product_item.uuid)
 
-    form_error = ""
-
     task_type = "Convert_Inbound"
 
     if request.method == "POST":
-        form = InboundForm(request.POST)
+        with transaction.atomic():
 
-        if form.is_valid():
-            with transaction.atomic():
-                (
-                    form_error,
-                    product_location,
-                    product_quantity,
-                ) = item.create_task_and_update_inventory(
-                    form_error,
-                    form,
+            form_error, product_location, product_quantity = processFormByTaskType(
+                request, task_type, item, inventory_listing
+            )
+
+            if form_error == "":
+                success_redirect = formSuccessRedirectByTaskType(
+                    request,
                     task_type,
-                    item,
-                    inventory_listing,
+                    product_quantity,
+                    product_location,
+                    convert_task,
+                    product_item,
                 )
+                return success_redirect
 
-                if form_error == "":
-                    conversion_task_error = (
-                        convert_task.confirm_consumption_and_update_inventory()
-                    )
-                    if not conversion_task_error:
-                        parent_task = convert_task.task
-                        parent_task.set_complete(product_quantity, product_location)
-                        return redirect(
-                            "core:task_confirm",
-                            task_type="Inbound",
-                            item_uuid=product_item.uuid,
-                        )
-        else:
-            print("form.errors")
-            print(form.errors)
+            else:
+                print("form_error")
+                print(form_error)
 
     else:
         form = InboundForm()

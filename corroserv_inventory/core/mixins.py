@@ -21,7 +21,7 @@ class ItemMixin(models.Model):
 
         quantity_input = (
             -int(form.cleaned_data["quantity"])
-            if task_type == "Outbound"
+            if task_type in ["Outbound", "Consume"]
             else int(form.cleaned_data["quantity"])
         )
         try:
@@ -43,6 +43,10 @@ class ItemMixin(models.Model):
                                 name=form.cleaned_data["from_location"]
                             ),
                         )
+                    elif task_type == "Consume":
+                        core_models.ConsumeTask.objects.create(
+                            task=task_obj,
+                        )
                     else:
                         core_models.InterfaceTask.objects.create(
                             task=task_obj,
@@ -61,13 +65,13 @@ class ItemMixin(models.Model):
                     inventory_quantity = inventory_list_item.quantity + quantity_input
                     if inventory_quantity > 0:
                         inventory_list_item.quantity = inventory_quantity
+                        inventory_list_item.save()
                         if task_type == "Transfer":
                             from_inventory_list_item.quantity = (
                                 from_inventory_list_item.quantity - quantity_input
                             )
+                            from_inventory_list_item.save()
 
-                        inventory_list_item.save()
-                        from_inventory_list_item.save()
                     else:
                         form_error = "Input quantity is higher than the quantity available in this location"
                 except core_models.Inventory.DoesNotExist:
@@ -131,6 +135,8 @@ class ConvertTaskMixin(models.Model):
                     material_inventory = consumption_item.inventory_item
 
                     if consumption_item.open_inventory_id:
+                        print("consumption_item.open_inventory_id")
+                        print(consumption_item.open_inventory_id)
                         open_inventory_item = (
                             core_models.SingleOpenInventory.objects.get(
                                 pk=consumption_item.open_inventory_id

@@ -43,10 +43,8 @@
           {% if inventory_item.id in consumption_list_inventory_item_ids %}
           <button disabled class="btn btn-done mb-3">Done</button>
           {% else %}
-          <button class="btn btn-success mb-3">
-            <a
-              href="{% url 'core:convert_material_consumption' convert_task_id material.id inventory_item.location.uuid %}">Select</a>
-          </button>
+          <a type="button" class="btn btn-success mb-3"
+            href="{% url 'core:convert_material_consumption' convert_task_id material.id inventory_item.location.uuid %}">Select</a>
           {% endif %}
         </td>
         {% endif %}
