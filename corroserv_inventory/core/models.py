@@ -104,7 +104,7 @@ class Task(TaskMixin):
 
     @property
     def transfer_from_location(self):
-        return self.transfer_from_locations.last().name
+        return self.transfer_task.last().from_location.name
 
 
 class TaskStatus(models.Model):
@@ -171,12 +171,12 @@ class ConvertMaterialConsumption(models.Model):
 
 
 class TransferTask(models.Model):
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    from_location = models.ForeignKey(
-        Location,
-        related_name="transfer_from_locations",
-        on_delete=models.PROTECT,
+    task = models.ForeignKey(
+        Task,
+        related_name="transfer_task",
+        on_delete=models.CASCADE,
     )
+    from_location = models.ForeignKey(Location, on_delete=models.PROTECT)
 
 
 # class SingleOpenInventoryTransfer(models.Model):
