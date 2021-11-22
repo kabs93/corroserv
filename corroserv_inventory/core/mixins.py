@@ -20,9 +20,9 @@ class ItemMixin(models.Model):
         }
 
         quantity_input = (
-            int(form.cleaned_data["quantity"])
-            if task_type == "Inbound" or task_type == "Convert_Inbound"
-            else -int(form.cleaned_data["quantity"])
+            -int(form.cleaned_data["quantity"])
+            if task_type == "Outbound"
+            else int(form.cleaned_data["quantity"])
         )
         try:
             location_input = core_models.Location.objects.get(
@@ -36,17 +36,38 @@ class ItemMixin(models.Model):
                         quantity=quantity_input,
                         type=core_models.TaskType.objects.get(name=task_type),
                     )
-                    core_models.InterfaceTask.objects.create(
-                        task=task_obj, type=interface_task_type[task_type]
-                    )
+                    if task_type == "Transfer":
+                        core_models.TransferTask.objects.create(
+                            task=task_obj,
+                            from_location=core_models.Location.objects.get(
+                                name=form.cleaned_data["from_location"]
+                            ),
+                        )
+                    else:
+                        core_models.InterfaceTask.objects.create(
+                            task=task_obj,
+                            type=interface_task_type[task_type],
+                        )
                     core_models.TaskStatus.objects.create(task=task_obj, status="CTD")
 
                 try:
                     inventory_list_item = inventory_listing.get(location=location_input)
+                    if task_type == "Transfer":
+                        from_inventory_list_item = inventory_listing.get(
+                            location=core_models.Location.objects.get(
+                                name=form.cleaned_data["from_location"]
+                            )
+                        )
                     inventory_quantity = inventory_list_item.quantity + quantity_input
                     if inventory_quantity > 0:
                         inventory_list_item.quantity = inventory_quantity
+                        if task_type == "Transfer":
+                            from_inventory_list_item.quantity = (
+                                from_inventory_list_item.quantity - quantity_input
+                            )
+
                         inventory_list_item.save()
+                        from_inventory_list_item.save()
                     else:
                         form_error = "Input quantity is higher than the quantity available in this location"
                 except core_models.Inventory.DoesNotExist:

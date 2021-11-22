@@ -7,7 +7,12 @@
         <th>Task</th>
         <th>Type</th>
         <th>Item</th>
+        {% if task_type == 'Transfer' %}
+        <th>From Location</th>
+        <th>To Location</th>
+        {% else %}
         <th>Location</th>
+        {% endif %}
         <th>Quantity</th>
         <th>Status</th>
       </tr>
@@ -28,6 +33,11 @@
         <td>{{ forloop.counter }}</td>
         <td>{{ task.type.name }}</td>
         <td>{{ task.item.name }}</td>
+        {% if task_type == 'Transfer' %}
+        <td>{{ task.transfer_from_location }}</td>
+        <!-- <td>INSERT FROM LOCATION</td> -->
+        <td>{{ task.location }}</td>
+        {% else %}
         <td>
           {% if task.location.name == None %}
           Pending
@@ -35,6 +45,7 @@
           {{ task.location.name }}
           {% endif %}
         </td>
+        {% endif %}
         <td>
           {% if task.quantity == None %}
           Pending

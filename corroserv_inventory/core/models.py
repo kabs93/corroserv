@@ -102,6 +102,10 @@ class Task(TaskMixin):
     def latest_status(self):
         return self.task_statuses.last().get_status_display()
 
+    @property
+    def transfer_from_location(self):
+        return self.transfer_from_locations.last().name
+
 
 class TaskStatus(models.Model):
     DRAFT = "DRT"
@@ -168,7 +172,11 @@ class ConvertMaterialConsumption(models.Model):
 
 class TransferTask(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    to_location = models.ForeignKey(Location, on_delete=models.PROTECT)
+    from_location = models.ForeignKey(
+        Location,
+        related_name="transfer_from_locations",
+        on_delete=models.PROTECT,
+    )
 
 
 # class SingleOpenInventoryTransfer(models.Model):

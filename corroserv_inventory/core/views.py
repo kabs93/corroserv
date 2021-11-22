@@ -6,7 +6,7 @@ from django.http import HttpRequest, HttpResponse
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect, render
 
-from .forms import ConsumeForm, CreateItemForm, InboundForm, OutboundForm
+from .forms import ConsumeForm, CreateItemForm, InboundForm, OutboundForm, TransferForm
 from .models import (
     ConvertMaterial,
     ConvertMaterialConsumption,
@@ -114,6 +114,8 @@ def task_confirm(
             form = OutboundForm(request.POST)
         elif task_type == "Consume":
             form = ConsumeForm(request.POST)
+        elif task_type == "Transfer":
+            form = TransferForm(request.POST)
 
         if form.is_valid():
             (
@@ -128,7 +130,10 @@ def task_confirm(
                 inventory_listing,
             )
             if form_error == "":
-                return redirect(request.path_info)
+                if task_type == "Transfer":
+                    return redirect("core:task", task_type)
+                else:
+                    return redirect(request.path_info)
         else:
             print("form.errors")
             print(form.errors)
@@ -149,6 +154,11 @@ def task_confirm(
                 form = ConsumeForm(initial={"location": inventory_item.location})
             else:
                 form = ConsumeForm()
+        elif task_type == "Transfer":
+            if inventory_item:
+                form = TransferForm(initial={"from_location": inventory_item.location})
+            else:
+                form = TransferForm()
         else:
             form = None
 
