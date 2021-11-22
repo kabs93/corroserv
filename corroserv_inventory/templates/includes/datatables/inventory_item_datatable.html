@@ -7,9 +7,12 @@
         <th>Item</th>
         <th>Type</th>
         <th>Location</th>
-        <th>Quantity</th>
+        <th>Total</th>
         {% if page_type == "select_task" %}
         <th></th>
+        {% endif %}
+        {% if item_type == "Material" %}
+        <th>(Openeded)</th>
         {% endif %}
       </tr>
     </thead>
@@ -47,6 +50,9 @@
             href="{% url 'core:convert_material_consumption' convert_task_id material.id inventory_item.location.uuid %}">Select</a>
           {% endif %}
         </td>
+        {% endif %}
+        {% if item_type == "Material" %}
+        <td>{{ inventory_item.open_inventory_count }}</td>
         {% endif %}
       </tr>
       {% endfor %}

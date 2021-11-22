@@ -61,6 +61,11 @@ class Inventory(models.Model):
 
     objects = InventoryManager()
 
+    @property
+    def open_inventory_count(self):
+        open_inventory_count = self.open_inventory_items.count()
+        return f"({open_inventory_count})" if open_inventory_count > 0 else "-"
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
