@@ -32,6 +32,7 @@ class Item(ItemMixin):
         editable=False,
     )
     name = models.CharField(max_length=64, unique=True)
+    sku = models.CharField(max_length=32, null=True, unique=True)
     type = models.ForeignKey(ItemType, on_delete=models.PROTECT)
     size = models.FloatField(null=True)
     uom = models.ForeignKey(UoM, on_delete=models.PROTECT, null=True)

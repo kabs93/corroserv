@@ -5,6 +5,7 @@
     <thead>
       <tr>
         <th>Item</th>
+        <th>SKU</th>
         <th>Type</th>
         <th>Location</th>
         <th>Total</th>
@@ -19,6 +20,7 @@
     <tfoot>
       <tr>
         <th>Item</th>
+        <th>SKU</th>
         <th>Type</th>
         <th>Location</th>
         <th>Quantity</th>
@@ -31,15 +33,18 @@
       {% for inventory_item in inventory_listing %}
       <tr>
         <td>{{ inventory_item.item.name }}</td>
+        {% if inventory_item.item.sku %}
+        <td>{{ inventory_item.item.sku }}</td>
+        {% else %}
+        <td>-</td>
+        {% endif %}
         <td>{{ inventory_item.item.type.name }}</td>
         <td>{{ inventory_item.location.name }}</td>
         <td>{{ inventory_item.quantity }}</td>
         {% if page_type == "select_task" %}
         <td>
-          <button class="btn btn-success mb-3">
-            <a
-              href="{% url 'core:task_confirm' task_type inventory_item.item.uuid %}?inventory={{ inventory_item.id }}">Select</a>
-          </button>
+          <a type="button" class="btn btn-success mb-3"
+            href="{% url 'core:task_confirm' task_type inventory_item.item.uuid %}?inventory={{ inventory_item.id }}">Select</a>
         </td>
         {% elif page_type == "select_material" %}
         <td>

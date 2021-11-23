@@ -13,10 +13,15 @@ class CreateItemForm(forms.ModelForm):
         ),
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["sku"].label = "SKU"
+
     class Meta:
         model = Item
         fields = (
             "name",
+            "sku",
             "uom",
             "size",
         )
@@ -25,6 +30,12 @@ class CreateItemForm(forms.ModelForm):
                 attrs={
                     "class": "form-control",
                     "placeholder": "Enter Item name",
+                }
+            ),
+            "sku": TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Scan SKU into this field",
                 }
             ),
             "size": TextInput(

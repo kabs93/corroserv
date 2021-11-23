@@ -85,10 +85,6 @@ class TaskManager(models.Manager):
     ):
 
         return self.filter(type__name=task_type)
-        # if task_type != 'Convert':
-        #     return self.filter(type__name=task_type)
-        # else:
-        #     return self.filter(type__name=task_type)
 
     def create_convert_task(
         self,
