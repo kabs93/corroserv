@@ -4,7 +4,13 @@ from django.db import models
 from django.db.models.fields import BooleanField
 
 from .managers import ConvertMaterialManager, InventoryManager, ItemManager, TaskManager
-from .mixins import ConvertMaterialMixin, ConvertTaskMixin, ItemMixin, TaskMixin
+from .mixins import (
+    ConvertMaterialMixin,
+    ConvertTaskMixin,
+    ItemMixin,
+    TaskMixin,
+    TimestampedModel,
+)
 
 
 class ItemType(models.Model):
@@ -113,7 +119,8 @@ class Task(TaskMixin):
         return self.transfer_task.last().from_location.name
 
 
-class TaskStatus(models.Model):
+class TaskStatus(TimestampedModel):
+
     DRAFT = "DRT"
     CREATED = "CRT"
     COMPLETED = "CTD"

@@ -9,6 +9,13 @@ from django.shortcuts import redirect
 import corroserv_inventory.core.models as core_models
 
 
+class TimestampedModel(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        abstract = True
+
+
 class ItemMixin(models.Model):
     def create_task_and_update_inventory(
         self,
