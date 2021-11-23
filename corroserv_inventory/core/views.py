@@ -7,14 +7,7 @@ from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect, render
 
 from .forms import CreateItemForm, InboundForm
-from .models import (
-    ConvertMaterial,
-    ConvertMaterialConsumption,
-    ConvertTask,
-    Inventory,
-    Item,
-    Task,
-)
+from .models import ConvertMaterial, ConvertTask, Inventory, Item, Task
 from .utils import (
     formSuccessRedirectByTaskType,
     getFormByTaskType,
@@ -112,7 +105,7 @@ def task_confirm(
 
     form_error = ""
     if request.method == "POST":
-        form_error, product_location, product_quantity = processFormByTaskType(
+        form_error, _, _ = processFormByTaskType(
             request, task_type, item, inventory_listing
         )
 
@@ -192,34 +185,26 @@ def convert_materials(request: HttpRequest, product_uuid: uuid) -> HttpResponse:
 def convert_task_main(request: HttpRequest, convert_task_id: int) -> HttpResponse:
 
     convert_task = ConvertTask.objects.get(pk=convert_task_id)
-    material_listing = ConvertMaterial.objects.get_materials_for_convert_task(
-        convert_task
-    )
-    consumption_list = ConvertMaterialConsumption.objects.filter(
-        convert_material__in=material_listing
-    )
-    consumption_list_item_ids = [
-        item.convert_material.item.id for item in consumption_list
-    ]
+
+    (
+        material_listing,
+        consumption_list_item_ids,
+    ) = convert_task.get_materials_and_consumption_item_ids()
 
     conversion_task_error = None
 
     if request.method == "POST":
         if "delete_convert_task" in request.POST:
-            convert_task.task.delete()
-            return redirect("core:task", "Convert")
+            return convert_task.delete_and_redirect()
         if "confirm_conversion_task" in request.POST:
-            materials_consumption_check = [
-                material.item.id in consumption_list_item_ids
-                for material in material_listing
-            ]
-
-            if False in materials_consumption_check:
-                conversion_task_error = "Not all materials have been consumed"
-            else:
-                return redirect(
-                    "core:convert_confirm_product_quantity", convert_task_id
-                )
+            (
+                success_redirect,
+                conversion_task_error,
+            ) = convert_task.check_materials_consumption(
+                material_listing, consumption_list_item_ids, convert_task_id
+            )
+            if success_redirect:
+                return success_redirect
 
     context = {
         "material_listing": material_listing,
@@ -239,15 +224,11 @@ def convert_material_locations(
 ) -> HttpResponse:
 
     material = ConvertMaterial.objects.get(pk=convert_material_id)
-    inventory_listing = Inventory.objects.get_details_for_material(material)
 
-    consumption_list = ConvertMaterialConsumption.objects.filter(
-        convert_material=material
-    )
-
-    consumption_list_inventory_item_ids = [
-        item.inventory_item.id for item in consumption_list
-    ]
+    (
+        inventory_listing,
+        consumption_list_inventory_item_ids,
+    ) = material.get_material_inventory_and_consumption_inventory_ids()
 
     context = {
         "convert_task_id": convert_task_id,

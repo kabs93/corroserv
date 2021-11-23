@@ -1,6 +1,10 @@
+from typing import List, Tuple, Union
+
 from django.db import models, transaction
 from django.db.models.query import QuerySet
 from django.forms.forms import Form
+from django.http.response import HttpResponseRedirect
+from django.shortcuts import redirect
 
 import corroserv_inventory.core.models as core_models
 
@@ -121,7 +125,60 @@ class TaskMixin(models.Model):
 
 
 class ConvertTaskMixin(models.Model):
-    def confirm_consumption_and_update_inventory(self) -> str:
+    def get_materials_and_consumption_item_ids(
+        self: "core_models.ConvertTask",
+    ) -> Tuple[QuerySet["core_models.ConvertMaterial"], List[int]]:
+
+        # Get Materials
+
+        materials = core_models.ConvertMaterial.objects.get_materials_for_convert_task(
+            self
+        )
+
+        # Get Consumption Item Ids
+
+        consumption_list = core_models.ConvertMaterialConsumption.objects.filter(
+            convert_material__in=materials
+        )
+
+        consumption_item_ids = [
+            item.convert_material.item.id for item in consumption_list
+        ]
+
+        return materials, consumption_item_ids
+
+    def delete_and_redirect(self) -> HttpResponseRedirect:
+
+        self.task.delete()
+        return redirect("core:task", "Convert")
+
+    def check_materials_consumption(
+        self: "core_models.ConvertTask",
+        material_listing: QuerySet["core_models.ConvertMaterial"],
+        consumption_list_item_ids: List[int],
+        convert_task_id: int,
+    ) -> Union[HttpResponseRedirect, str]:
+
+        conversion_task_error = None
+        success_redirect = None
+
+        materials_consumption_check = [
+            material.item.id in consumption_list_item_ids
+            for material in material_listing
+        ]
+
+        if False in materials_consumption_check:
+            conversion_task_error = "Not all materials have been consumed"
+        else:
+            success_redirect = redirect(
+                "core:convert_confirm_product_quantity", convert_task_id
+            )
+
+        return success_redirect, conversion_task_error
+
+    def confirm_consumption_and_update_inventory(
+        self: "core_models.ConvertTask",
+    ) -> str:
 
         conversion_task_error = None
 
@@ -162,6 +219,31 @@ class ConvertTaskMixin(models.Model):
                             )
 
         return conversion_task_error
+
+    class Meta:
+        abstract = True
+
+
+class ConvertMaterialMixin(models.Model):
+    def get_material_inventory_and_consumption_inventory_ids(
+        self: "core_models.ConvertMaterial",
+    ) -> Tuple[QuerySet["core_models.Inventory"], List[int]]:
+
+        # Get Inventory List
+
+        inventory_list = core_models.Inventory.objects.get_details_for_material(self)
+
+        # Get Consumption List Inventory Item Ids
+
+        consumption_list = core_models.ConvertMaterialConsumption.objects.filter(
+            convert_material=self
+        )
+
+        consumption_inventory_ids = [
+            item.inventory_item.id for item in consumption_list
+        ]
+
+        return inventory_list, consumption_inventory_ids
 
     class Meta:
         abstract = True

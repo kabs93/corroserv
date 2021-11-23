@@ -4,7 +4,7 @@ from django.db import models
 from django.db.models.fields import BooleanField
 
 from .managers import ConvertMaterialManager, InventoryManager, ItemManager, TaskManager
-from .mixins import ConvertTaskMixin, ItemMixin, TaskMixin
+from .mixins import ConvertMaterialMixin, ConvertTaskMixin, ItemMixin, TaskMixin
 
 
 class ItemType(models.Model):
@@ -152,7 +152,7 @@ class ConvertTask(ConvertTaskMixin):
     )
 
 
-class ConvertMaterial(models.Model):
+class ConvertMaterial(ConvertMaterialMixin):
     convert_task = models.ForeignKey(
         ConvertTask, related_name="materials", on_delete=models.CASCADE
     )
