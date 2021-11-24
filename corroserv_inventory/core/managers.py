@@ -52,6 +52,7 @@ class ItemManager(models.Manager):
         new_item = self.create(
             name=form.cleaned_data["name"],
             type=core_models.ItemType.objects.get(name=item_type),
+            sku=form.cleaned_data["sku"],
             uom=form.cleaned_data["uom"],
             size=form.cleaned_data["size"],
         )
